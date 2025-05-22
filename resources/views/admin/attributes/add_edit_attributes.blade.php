@@ -95,10 +95,6 @@
                                     &nbsp; {{ $product['product_code'] }}
                                 </div>
                                 <div class="form-group">
-                                    <label for="product_color">Product Color:</label>
-                                    &nbsp; {{ $product['product_color'] }}
-                                </div>
-                                <div class="form-group">
                                     <label for="product_price">Product Price:</label>
                                     &nbsp; {{ $product['product_price'] }}
                                 </div>

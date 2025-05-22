@@ -106,7 +106,6 @@
                             <td>{{ $product['product_code'] }}</td>
                             <td>{{ $product['product_name'] }}</td>
                             <td>{{ $product['product_size'] }}</td>
-                            <td>{{ $product['product_color'] }}</td>
                             <td>{{ $product['product_qty'] }}</td>
                         </tr>
 

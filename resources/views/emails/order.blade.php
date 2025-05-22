@@ -34,7 +34,6 @@
                             <td>{{ $order['product_name'] }}</td>
                             <td>{{ $order['product_code'] }}</td>
                             <td>{{ $order['product_size'] }}</td>
-                            <td>{{ $order['product_color'] }}</td>
                             <td>{{ $order['product_qty'] }}</td>
                             <td>{{ $order['product_price'] }}</td>
                         </tr>

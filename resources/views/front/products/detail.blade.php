@@ -665,9 +665,6 @@
 
                                                         <a href="shop-v1-root-category.html">{{ $product['product_code'] }}</a>
                                                     </li>
-                                                    <li class="has-separator">
-                                                        <a href="listing.html">{{ $product['product_color'] }}</a>
-                                                    </li>
                                                     <li>
                                                         <a href="listing.html">{{ $product['brand']['name'] }}</a>
 
@@ -769,9 +766,6 @@
 
 
                                                         <a href="shop-v1-root-category.html">{{ $product['product_code'] }}</a>
-                                                    </li>
-                                                    <li class="has-separator">
-                                                        <a href="listing.html">{{ $product['product_color'] }}</a>
                                                     </li>
                                                     <li>
                                                         <a href="listing.html">{{ $product['brand']['name'] }}</a>

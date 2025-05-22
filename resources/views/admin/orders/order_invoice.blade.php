@@ -115,7 +115,6 @@
                                             @endphp
                                         </td>
                                         <td class="text-center">{{ $product['product_size'] }}</td>
-                                        <td class="text-center">{{ $product['product_color'] }}</td>
                                         <td class="text-center">INR {{ $product['product_price'] }}</td>
                                         <td class="text-center">{{ $product['product_qty'] }}</td>
                                         <td class="text-right">INR {{ $product['product_price'] * $product['product_qty'] }}</td>

@@ -33,7 +33,6 @@
                                 <h6>
                                     {{ $item['product']['product_name'] }} ({{ $item['product']['product_code'] }}) - {{ $item['size'] }}
                                     <br>
-                                    Color: {{ $item['product']['product_color'] }}
                                 </h6>
                             </a>
                         </div>

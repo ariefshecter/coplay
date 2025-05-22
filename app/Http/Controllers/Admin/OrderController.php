@@ -679,7 +679,6 @@ class OrderController extends Controller
                                     <tr>
                                         <td class="desc">' . $product['product_code'] . '</td>
                                         <td class="qty">' . $product['product_size'] . '</td>
-                                        <td class="qty">' . $product['product_color'] . '</td>
                                         <td class="qty">' . $product['product_qty'] . '</td>
                                         <td class="unit">INR ' . $product['product_price'] . '</td>
                                         <td class="total">INR ' . $product['product_price'] * $product['product_qty'] . '</td>
