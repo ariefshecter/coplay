@@ -111,7 +111,6 @@ class ProductsController extends Controller
                 'product_name'  => 'required', // only alphabetical characters and spaces
                 'product_code'  => 'required|regex:/^\w+$/', // alphanumeric regular expression
                 'product_price' => 'required|numeric',
-                'product_color' => 'required|regex:/^[\pL\s\-]+$/u', // only alphabetical characters and spaces
             ];
 
             $customMessages = [ // Specifying A Custom Message For A Given Attribute: https://laravel.com/docs/9.x/validation#specifying-a-custom-message-for-a-given-attribute
@@ -122,8 +121,6 @@ class ProductsController extends Controller
                 'product_code.regex'     => 'Valid Product Code is required',
                 'product_price.required' => 'Product Price is required',
                 'product_price.numeric'  => 'Valid Product Price is required',
-                'product_color.required' => 'Product Color is required',
-                'product_color.regex'    => 'Valid Product Color is required',
 
             ];
 
@@ -237,7 +234,6 @@ class ProductsController extends Controller
 
             $product->product_name     = $data['product_name'];
             $product->product_code     = $data['product_code'];
-            $product->product_color    = $data['product_color'];
             $product->product_price    = $data['product_price'];
             $product->product_discount = $data['product_discount'];
             $product->product_weight   = $data['product_weight'];
@@ -348,7 +344,7 @@ class ProductsController extends Controller
     public function addAttributes(Request $request, $id) { // Add/Edit Attributes function    
         Session::put('page', 'products');
 
-        $product = Product::select('id', 'product_name', 'product_code', 'product_color', 'product_price', 'product_image')->with('attributes')->find($id); // with('attributes') is the relationship method name in the Product.php model
+        $product = Product::select('id', 'product_name', 'product_code',  'product_price', 'product_image')->with('attributes')->find($id); // with('attributes') is the relationship method name in the Product.php model
 
         if ($request->isMethod('post')) { // When the <form> is submitted
             $data = $request->all();
@@ -438,7 +434,7 @@ class ProductsController extends Controller
     public function addImages(Request $request, $id) { // $id is the URL Paramter (slug) passed from the URL
         Session::put('page', 'products');
 
-        $product = Product::select('id', 'product_name', 'product_code', 'product_color', 'product_price', 'product_image')->with('images')->find($id); // with('images') is the relationship method name in the Product.php model
+        $product = Product::select('id', 'product_name', 'product_code',  'product_price', 'product_image')->with('images')->find($id); // with('images') is the relationship method name in the Product.php model
 
 
         if ($request->isMethod('post')) { // if the <form> is submitted

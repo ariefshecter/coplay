@@ -77,22 +77,7 @@ class ProductsFilter extends Model
         return $getProductSizes;
     }
 
-    // Get the colors of a product from a URL (URL of the category)    
-    public static function getColors($url) { // this method is used in filters.blade.php
-        // Get the parent category & its subcategories (child categories) ids of a certain URL
-        $categoryDetails = Category::categoryDetails($url);
 
-        // Get the product ids of the fetched categories of the URL from `products` table
-        $getProductIds = Product::select('id')->whereIn('category_id', $categoryDetails['catIds'])->pluck('id')->toArray();
-        // dd($getProductIds);
-
-        // Get the colors of the product ids from the `products` table
-        $getProductColors = Product::select('product_color')->whereIn('id', $getProductIds)->groupBy('product_color')->pluck('product_color')->toArray(); // We used groupBy() method to eliminate the repeated product `color`-s (in order not to show repeated 'filters' values (like red, red, green, ...)): https://laravel.com/docs/9.x/collections#method-groupby
-        // dd($getProductColors);
-
-
-        return $getProductColors;
-    }
 
     // Get the brand of a product from a URL (URL of the category)    
     public static function getBrands($url) { // this method is used in filters.blade.php

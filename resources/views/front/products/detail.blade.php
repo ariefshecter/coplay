@@ -237,10 +237,6 @@
                                 <span>Product Code:</span>
                                 <span>{{ $productDetails['product_code'] }}</span>
                             </div>
-                            <div class="left">
-                                <span>Product Color:</span>
-                                <span>{{ $productDetails['product_color'] }}</span>
-                            </div>
                             <div class="availability">
                                 <span>Availability:</span>
 
