@@ -214,15 +214,15 @@
 
                                 @if ($getDiscountPrice > 0) {{-- if there's a discount on the product price --}}
                                     <div class="price">
-                                        <h4>EGP{{ $getDiscountPrice }}</h4>
+                                        <h4>Rp{{ $getDiscountPrice }}</h4>
                                     </div>
                                     <div class="original-price">
                                         <span>Original Price:</span>
-                                        <span>EGP{{ $productDetails['product_price'] }}</span> {{-- the product original price (without discount) --}}
+                                        <span>Rp{{ $productDetails['product_price'] }}</span> {{-- the product original price (without discount) --}}
                                     </div>
                                 @else {{-- if there's no discount on the product price --}}
                                     <div class="price">
-                                        <h4>EGP{{ $productDetails['product_price'] }}</h4> {{-- the product original price (without discount) --}}
+                                        <h4>Rp{{ $productDetails['product_price'] }}</h4> {{-- the product original price (without discount) --}}
                                     </div>
                                 @endif
 
@@ -649,12 +649,7 @@
 
 
                                             </a>
-                                            <div class="item-action-behaviors">
-                                                <a class="item-quick-look" data-toggle="modal" href="#quick-view">Quick Look</a>
-                                                <a class="item-mail" href="javascript:void(0)">Mail</a>
-                                                <a class="item-addwishlist" href="javascript:void(0)">Add to Wishlist</a>
-                                                <a class="item-addCart" href="javascript:void(0)">Add to Cart</a>
-                                            </div>
+
                                         </div>
                                         <div class="item-content">
                                             <div class="what-product-is">
@@ -688,16 +683,16 @@
                                             @if ($getDiscountPrice > 0) {{-- If there's a discount on the price, show the price before (the original price) and after (the new price) the discount --}}
                                                 <div class="price-template">
                                                     <div class="item-new-price">
-                                                        EGP{{ $getDiscountPrice }} 
+                                                        Rp{{ $getDiscountPrice }} 
                                                     </div>
                                                     <div class="item-old-price">
-                                                        EGP{{ $product['product_price'] }}
+                                                        Rp{{ $product['product_price'] }}
                                                     </div>
                                                 </div>
                                             @else {{-- if there's no discount on the price, show the original price --}}
                                                 <div class="price-template">
                                                     <div class="item-new-price">
-                                                        EGP{{ $product['product_price'] }}
+                                                        Rp{{ $product['product_price'] }}
                                                     </div>
                                                 </div>
                                             @endif
@@ -751,12 +746,7 @@
 
 
                                             </a>
-                                            <div class="item-action-behaviors">
-                                                <a class="item-quick-look" data-toggle="modal" href="#quick-view">Quick Look</a>
-                                                <a class="item-mail" href="javascript:void(0)">Mail</a>
-                                                <a class="item-addwishlist" href="javascript:void(0)">Add to Wishlist</a>
-                                                <a class="item-addCart" href="javascript:void(0)">Add to Cart</a>
-                                            </div>
+
                                         </div>
                                         <div class="item-content">
                                             <div class="what-product-is">
@@ -789,16 +779,16 @@
                                             @if ($getDiscountPrice > 0) {{-- If there's a discount on the price, show the price before (the original price) and after (the new price) the discount --}}
                                                 <div class="price-template">
                                                     <div class="item-new-price">
-                                                        EGP{{ $getDiscountPrice }} 
+                                                        Rp{{ $getDiscountPrice }} 
                                                     </div>
                                                     <div class="item-old-price">
-                                                        EGP{{ $product['product_price'] }}
+                                                        Rp{{ $product['product_price'] }}
                                                     </div>
                                                 </div>
                                             @else {{-- if there's no discount on the price, show the original price --}}
                                                 <div class="price-template">
                                                     <div class="item-new-price">
-                                                        EGP{{ $product['product_price'] }}
+                                                        Rp{{ $product['product_price'] }}
                                                     </div>
                                                 </div>
                                             @endif

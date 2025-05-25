@@ -28,7 +28,7 @@ Sebelum memulai, pastikan Anda sudah memiliki perangkat lunak berikut terinstal 
     * Buka terminal atau command prompt Anda.
     * Arahkan (menggunakan perintah `cd`) ke direktori root proyek yang baru saja Anda kloning atau ekstrak. Misalnya, jika Anda mengkloningnya ke dalam folder `coplay`, maka perintahnya adalah:
         ```bash
-        cd co-play
+        cd coplay
         ```
     * Setelah berada di direktori root proyek, jalankan perintah berikut untuk menginstal semua dependensi PHP yang dibutuhkan oleh proyek (didefinisikan dalam file `composer.json`):
         ```bash
