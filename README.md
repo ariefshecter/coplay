@@ -19,14 +19,14 @@ Sebelum memulai, pastikan Anda sudah memiliki perangkat lunak berikut terinstal 
     * **Menggunakan Git (disarankan):**
         Buka terminal atau command prompt Anda, lalu jalankan perintah berikut untuk mengkloning repositori proyek dari GitHub:
         ```bash
-        git clone [https://github.com/ariefshecter/coplay.git](https://github.com/ariefshecter/coplay.git)
+        git clone https://github.com/ariefshecter/coplay.git
         ```
     * **Mengunduh ZIP:**
         Jika Anda tidak menggunakan Git, Anda bisa mengunduh proyek sebagai file ZIP langsung dari halaman GitHub proyek tersebut (`https://github.com/ariefshecter/coplay.git`). Setelah diunduh, ekstrak file ZIP tersebut ke direktori yang Anda inginkan.
 
 2.  **Masuk ke Direktori Proyek dan Instal Dependensi Composer:**
     * Buka terminal atau command prompt Anda.
-    * Arahkan (menggunakan perintah `cd`) ke direktori root proyek yang baru saja Anda kloning atau ekstrak. Misalnya, jika Anda mengkloningnya ke dalam folder `co-play`, maka perintahnya adalah:
+    * Arahkan (menggunakan perintah `cd`) ke direktori root proyek yang baru saja Anda kloning atau ekstrak. Misalnya, jika Anda mengkloningnya ke dalam folder `coplay`, maka perintahnya adalah:
         ```bash
         cd co-play
         ```
