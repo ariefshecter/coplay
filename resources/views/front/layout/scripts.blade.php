@@ -28,7 +28,6 @@
 
 
             var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-            var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -50,7 +49,7 @@
                     @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.filter) selector would select the filter values of ONE filter ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'fabric' filter values like: ['cotton', 'polyester'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                         {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                     @endforeach
-                    sort: sort, url: url, size: size, color: color, price: price, brand: brand
+                    sort: sort, url: url, size: size, price: price, brand: brand
 
                 },
                 success: function(data) {
@@ -77,7 +76,7 @@
 
 
                 var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-                var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
+                // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
                 var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
                 var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -100,7 +99,7 @@
                         @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.filter) selector would select the filter values of ONE filter ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'color' filter values like: ['red', 'green'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                             {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                         @endforeach
-                        url: url, sort: sort, size: size, color: color, price: price, brand: brand
+                        url: url, sort: sort, size: size, price: price, brand: brand
 
                     },
                     success: function(data) {
@@ -126,7 +125,7 @@
 
 
             var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-            var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
+// get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -149,7 +148,7 @@
                     @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected 'size' filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.size) selector would select the 'size' filter values ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'size' filter values like: ['small', 'medium'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                         {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                     @endforeach
-                    url: url, sort: sort, size: size, color: color, price: price, brand: brand
+                    url: url, sort: sort, size: size, price: price, brand: brand
 
                 },
                 success: function(data) {
@@ -170,7 +169,7 @@
             var sort = $('#sort option:selected').val(); // select the :selected <option> element ONLY which is :selected in listing.blade.php (which, in turn, includes filters.blade.php) (like 'price_highest', 'name_z_a', ...)    // https://www.w3schools.com/jquery/sel_input_selected.asp    // .text() https://www.w3schools.com/jquery/html_text.asp    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
 
             var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-            var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
+// get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -193,7 +192,7 @@
                     @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected 'color' filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.color) selector would select the 'color' filter values ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'color' filter values like: ['small', 'medium'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                         {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                     @endforeach
-                    url: url, sort: sort, size: size, color: color, price: price, brand: brand
+                    url: url, sort: sort, size: size, price: price, brand: brand
 
                 },
                 success: function(data) {
@@ -214,7 +213,7 @@
             var sort = $('#sort option:selected').val(); // select the :selected <option> element ONLY which is :selected in listing.blade.php (which, in turn, includes filters.blade.php) (like 'price_highest', 'name_z_a', ...)    // https://www.w3schools.com/jquery/sel_input_selected.asp    // .text() https://www.w3schools.com/jquery/html_text.asp    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
 
             var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-            var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
+ // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -236,7 +235,7 @@
                     @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected 'price' filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.price) selector would select the 'price' filter values ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'price' filter values like: ['small', 'medium'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                         {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                     @endforeach
-                    url: url, sort: sort, size: size, color: color, price: price, brand: brand
+                    url: url, sort: sort, size: size, price: price, brand: brand
 
                 },
                 success: function(data) {
@@ -257,7 +256,7 @@
             var sort = $('#sort option:selected').val(); // select the :selected <option> element ONLY which is :selected in listing.blade.php (which, in turn, includes filters.blade.php) (like 'brand_highest', 'name_z_a', ...)    // https://www.w3schools.com/jquery/sel_input_selected.asp    // .text() https://www.w3schools.com/jquery/html_text.asp    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
 
             var size  = get_filter('size'); // get all the ':checked' checkboxes (the 'size' filter values) in filters.blade.php    // get the filter values array of 'size' filter like    ['small', 'medium', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
-            var color = get_filter('color'); // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
+ // get all the ':checked' checkboxes (the 'color' filter values) in filters.blade.php    // get the filter values array of 'color' filter like    ['red', 'blue', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var price = get_filter('price'); // get all the ':checked' checkboxes (the 'price' filter values) in filters.blade.php    // get the filter values array of 'price' filter like    ['1000-2000', '2000-5000', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
             var brand = get_filter('brand'); // get all the ':checked' checkboxes (the 'brand' filter values) in filters.blade.php    // get the filter values array of 'brand' filter like    ['Concrete', 'Adidas', ...]    as an ARRAY    // get_filter() is in front/js/custom.js
 
@@ -279,7 +278,7 @@
                     @foreach ($productFilters as $filters) // A new separate loop to send all the other remaining filters' values in the AJAX call, along with sending the current jQuery selected 'brand' filter's values    // We have to loop over the main filters here AGAIN, otherwise the $(.brand) selector would select the 'brand' filter values ONLY, and would ignore the filter values of all the other filters e.g. Without the foreach loop, it would select the 'brand' filter values like: ['Concrete', 'Adidas'] but would ignore another filter like 'sleeve' filter and ignore its checked values like: ['full sleeve', 'half sleeve'] . Tip: Remove the foreach loop and change $filters to $filter and check the console (Don't forget to console.log(filter) inside the get_filter() function in front/js/custom.js)
                         {{ $filters['filter_column'] }}: {{ $filters['filter_column'] }}, // Note that fabric is an ARRAY of the filter values (like    ['cotton', 'polyester', ...]    ) of the 'fabric' filter    // send the Sorting Filters values (sort) along with the Dynamic Filters values ('fabric' Dynamic Filter values)
                     @endforeach
-                    url: url, sort: sort, size: size, color: color, price: price, brand: brand
+                    url: url, sort: sort, size: size, price: price, brand: brand
 
                 },
                 success: function(data) {

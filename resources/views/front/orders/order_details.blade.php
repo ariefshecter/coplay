@@ -89,7 +89,6 @@
                         <th>Product Code</th>
                         <th>Product Name</th>
                         <th>Product Size</th>
-                        <th>Product Color</th>
                         <th>Product Qty</th>
                     </tr>
 

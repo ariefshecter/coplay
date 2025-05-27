@@ -326,7 +326,6 @@
                                         <th>Code</th>
                                         <th>Name</th>
                                         <th>Size</th>
-                                        <th>Color</th>
                                         <th>Unit Price</th> 
                                         <th>Product Qty</th>
                                         <th>Total Price</th> 

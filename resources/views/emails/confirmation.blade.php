@@ -17,7 +17,7 @@
             <tr><td>&nbsp;</td></tr>
             <tr><td>Please click on below link to activate your Co-Play Application account:-</td></tr>
             <tr><td>&nbsp;</td></tr>
-            <tr><td><a href="{{ url('/user/confirm/' . $code) }}">Confirm Account</a></td></tr> {{-- $code is passed in from userRegister() method in UserController.php --}}
+            <tr><td><a href="{{ url('/user/confirm/' . $code) }}">Confirm Acctount</a></td></tr> {{-- $code is passed in from userRegister() method in UserController.php --}}
             <tr><td>&nbsp;</td></tr>
             <tr><td>&nbsp;</td></tr>
             <tr><td>Thanks & Regards,</td></tr>

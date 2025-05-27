@@ -102,7 +102,7 @@
             <tr><td>&nbsp;</td></tr>
             <tr><td>For any queries, you can contact us at <a href="mailto:info@MultiVendorEcommerceApplication.com.eg">info@MultiVendorEcommerceApplication.com.eg</a></td></tr>
             <tr><td>&nbsp;</td></tr>
-            <tr><td>Regards,<br>Team Multi-vendor E-commerce Application</td></tr>
+            <tr><td>Regards,<br>Team CoPlay Application</td></tr>
             <tr><td>&nbsp;</td></tr>
         </table>
     </body>

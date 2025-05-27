@@ -115,7 +115,7 @@ $sections = \App\Models\Section::sections();
 
                         <a href="{{ url('/') }}">
     <img src="{{ asset('front/images/main-logo/main-logo.png') }}"
-         alt="Multi-vendor E-commerce Application"
+         alt="CoPlay Application"
          class="app-brand-logo"
          style="width: 110px; height: auto;">
 </a>
