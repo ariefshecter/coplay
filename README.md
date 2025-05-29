@@ -89,10 +89,10 @@ Anda dapat menggunakan kredensial berikut untuk masuk dan mencoba aplikasi:
     * Email: `admin@admin.com`
     * Password: `123456`
 * **Vendor (untuk mengakses Panel Admin):**
-    * Email: `yasser@admin.com`
+    * Email: `vendor1@gmail.com`
     * Password: `123456`
 * **Pengguna (untuk mengakses Frontend):**
-    * Email: `ibrahim@gmail.com`
+    * Email: `customer1@gmail.com`
     * Password: `123456`
 
 ## Catatan Tambahan
