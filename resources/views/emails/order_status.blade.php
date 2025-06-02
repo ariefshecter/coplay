@@ -11,7 +11,7 @@
     <body>
         <table style="width: 700px">
             <tr><td>&nbsp;</td></tr>
-            <tr><td><img src="{{ asset('front/images/main-logo/main-logo.png') }}"></td></tr>
+            <tr><td><img src="{{ asset('front/images/main-logo/main-logo.png') }}" width="50"></td></tr>
             <tr><td>&nbsp;</td></tr>
             <tr><td>Hello {{ $name }}</td></tr>
             <tr><td>&nbsp;<br></td></tr>
