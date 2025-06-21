@@ -107,7 +107,6 @@
                         <li class="nav-item"> <a @if (Session::get('page') == 'brands')     style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/brands') }}">Brands</a></li> 
                         <li class="nav-item"> <a @if (Session::get('page') == 'products')   style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/products') }}">Products</a></li>
                         <li class="nav-item"> <a @if (Session::get('page') == 'coupons')    style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/coupons') }}">Coupons</a></li>
-                        <li class="nav-item"> <a @if (Session::get('page') == 'filters')    style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/filters') }}">Filters</a></li>
                     </ul>
                 </div>
             </li>
@@ -151,7 +150,6 @@
                 <div class="collapse" id="ui-users">
                     <ul class="nav flex-column sub-menu" style="background: #fff !important; color: #052CA3 !important">
                         <li class="nav-item"> <a @if (Session::get('page') == 'users')       style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/users') }}">Users</a></li>
-                        <li class="nav-item"> <a @if (Session::get('page') == 'subscribers') style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/subscribers') }}">Subscribers</a></li>
                     </ul>
                 </div>
             </li>
@@ -172,18 +170,7 @@
             </li>
 
             
-            <li class="nav-item">
-                <a @if (Session::get('page') == 'shipping') style="background: #052CA3 !important; color: #FFF !important" @endif class="nav-link" data-toggle="collapse" href="#ui-shipping" aria-expanded="false" aria-controls="ui-shipping">
-                    <i class="icon-layout menu-icon"></i>
-                    <span class="menu-title">Shipping Management</span>
-                    <i class="menu-arrow"></i>
-                </a>
-                <div class="collapse" id="ui-shipping">
-                    <ul class="nav flex-column sub-menu" style="background: #fff !important; color: #052CA3 !important">
-                        <li class="nav-item"> <a @if (Session::get('page') == 'shipping') style="background: #052CA3 !important; color: #FFF !important" @else style="background: #fff !important; color: #052CA3 !important" @endif class="nav-link" href="{{ url('admin/shipping-charges') }}">Shipping Charges</a></li>
-                    </ul>
-                </div>
-            </li>
+            
 
         @endif
 

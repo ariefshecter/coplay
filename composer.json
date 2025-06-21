@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.8",
         "league/omnipay": "^3.2",
         "maatwebsite/excel": "^3.1",
+        "midtrans/midtrans-php": "^2.6",
         "milon/barcode": "^10.0",
         "omnipay/paypal": "^3.0"
     },
