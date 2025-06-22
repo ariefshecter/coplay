@@ -1,15 +1,28 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Front\IndexController;
+use App\Http\Controllers\Front\ProductsController;
+use App\Http\Controllers\Front\UserController;
+use App\Http\Controllers\Front\VendorController;
+use App\Http\Controllers\Front\PaypalController; // Perbaikan: seharusnya App\Http\Controllers\Front\PaypalController
+use App\Http\Controllers\Front\AddressController; // Perbaikan: seharusnya App\Http\Controllers\Front\AddressController
+use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Front\RatingController;
+use App\Http\Controllers\Front\NewsletterController;
+use App\Http\Controllers\Front\CmsController; // Perbaikan: seharusnya App\Http\Controllers\Front\CmsController
+use App\Http\Controllers\Front\IyzipayController;
+use App\Http\Controllers\Front\MidtransController; // Import MidtransController baru
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
+| Di sini Anda dapat mendaftarkan rute web untuk aplikasi Anda. Rute ini
+| dimuat oleh RouteServiceProvider dalam grup yang
+| berisi grup middleware "web". Sekarang buat sesuatu yang hebat!
 |
 */
 
@@ -17,156 +30,156 @@ require __DIR__.'/auth.php';
 
 
 
-// Note: OUR WEBSITE WILL HAVE TWO MAJOR SECTIONS: ADMIN ROUTES (for the Admin Panel) & FRONT ROUTES (for the Frontend section routes)!:
+// Catatan: WEBSITE KAMI AKAN MEMILIKI DUA BAGIAN UTAMA: RUTE ADMIN (untuk Panel Admin) & RUTE DEPAN (untuk bagian Frontend)!:
 
-// First: Admin Panel routes:
-// The website 'ADMIN' Section: Route Group for routes starting with the 'admin' word (Admin Route Group)    // NOTE: ALL THE ROUTES INSIDE THIS PREFIX STATRT WITH 'admin/', SO THOSE ROUTES INSIDE THE PREFIX, YOU DON'T WRITE '/admin' WHEN YOU DEFINE THEM, IT'LL BE DEFINED AUTOMATICALLY!!
+// Pertama: Rute Panel Admin:
+// Bagian 'ADMIN' website: Grup Rute untuk rute yang dimulai dengan kata 'admin' (Grup Rute Admin) 	// CATATAN: SEMUA RUTE DI DALAM PREFIX INI DIMULAI DENGAN 'admin/', JADI RUTE-RUTE TERSEBUT DI DALAM PREFIX, ANDA TIDAK MENULIS '/admin' KETIKA ANDA MENDEFINISIKANNYA, ITU AKAN DIDEFINISIKAN SECARA OTOMATIS!!
 Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function() {
-    Route::match(['get', 'post'], 'login', 'AdminController@login'); // match() method is used to use more than one HTTP request method for the same route, so GET for rendering the login.php page, and POST for the login.php page <form> submission (e.g. GET and POST)    // Matches the '/admin/dashboard' URL (i.e. http://127.0.0.1:8000/admin/dashboard)
+	Route::match(['get', 'post'], 'login', 'AdminController@login'); // Metode match() digunakan untuk menggunakan lebih dari satu metode permintaan HTTP untuk rute yang sama, jadi GET untuk merender halaman login.php, dan POST untuk pengiriman <form> halaman login.php (misalnya GET dan POST) 	// Cocok dengan URL '/admin/dashboard' (yaitu http://127.0.0.1:8000/admin/dashboard)
 
 
-    // This a Route Group for routes that ALL start with 'admin/-something' and utilizes the 'admin' Authentication Guard    // Note: You must remove the '/admin'/ part from the routes that are written inside this Route Group (e.g.    Route::get('logout');    , NOT    Route::get('admin/logout');    )
-    Route::group(['middleware' => ['admin']], function() { // using our 'admin' guard (which we created in auth.php)
-        Route::get('dashboard', 'AdminController@dashboard'); // Admin login
-        Route::get('logout', 'AdminController@logout'); // Admin logout
-        Route::match(['get', 'post'], 'update-admin-password', 'AdminController@updateAdminPassword'); // GET request to view the update password <form>, and a POST request to submit the update password <form>
-        Route::post('check-admin-password', 'AdminController@checkAdminPassword'); // Check Admin Password // This route is called from the AJAX call in admin/js/custom.js page
-        Route::match(['get', 'post'], 'update-admin-details', 'AdminController@updateAdminDetails'); // Update Admin Details in update_admin_details.blade.php page    // 'GET' method to show the update_admin_details.blade.php page, and 'POST' method for the <form> submission in the same page
-        Route::match(['get', 'post'], 'update-vendor-details/{slug}', 'AdminController@updateVendorDetails'); // Update Vendor Details    // In the slug we can pass: 'personal' which means update vendor personal details, or 'business' which means update vendor business details, or 'bank' which means update vendor bank details    // We'll create one view (not 3) for the 3 pages, but parts inside it will change depending on the $slug value    // GET method to show the update admin details page, POST method for <form> submission
+	// Ini adalah Grup Rute untuk rute yang SEMUA dimulai dengan 'admin/-sesuatu' dan menggunakan Penjaga Otentikasi 'admin' 	// Catatan: Anda harus menghapus bagian '/admin'/ dari rute yang ditulis di dalam Grup Rute ini (misalnya 	Route::get('logout'); 	, BUKAN 	Route::get('admin/logout'); 	)
+	Route::group(['middleware' => ['admin']], function() { // menggunakan penjaga 'admin' kami (yang kami buat di auth.php)
+		Route::get('dashboard', 'AdminController@dashboard'); // Login Admin
+		Route::get('logout', 'AdminController@logout'); // Logout Admin
+		Route::match(['get', 'post'], 'update-admin-password', 'AdminController@updateAdminPassword'); // Permintaan GET untuk melihat <form> pembaruan kata sandi, dan permintaan POST untuk mengirimkan <form> pembaruan kata sandi
+		Route::post('check-admin-password', 'AdminController@checkAdminPassword'); // Periksa Kata Sandi Admin // Rute ini dipanggil dari panggilan AJAX di file admin/js/custom.js
+		Route::match(['get', 'post'], 'update-admin-details', 'AdminController@updateAdminDetails'); // Perbarui Detail Admin di halaman update_admin_details.blade.php 	// Metode 'GET' untuk menampilkan halaman update_admin_details.blade.php, dan metode 'POST' untuk pengiriman <form> di halaman yang sama
+		Route::match(['get', 'post'], 'update-vendor-details/{slug}', 'AdminController@updateVendorDetails'); // Perbarui Detail Vendor 	// Di slug kita dapat meneruskan: 'personal' yang berarti perbarui detail pribadi vendor, atau 'business' yang berarti perbarui detail bisnis vendor, atau 'bank' yang berarti perbarui detail bank vendor 	// Kami akan membuat satu tampilan (bukan 3) untuk 3 halaman, tetapi bagian di dalamnya akan berubah tergantung pada nilai $slug 	// Metode GET untuk menampilkan halaman detail admin, metode POST untuk pengiriman <form>
 
-        // Update the vendor's commission percentage (by the Admin) in `vendors` table (for every vendor on their own) in the Admin Panel in admin/admins/view_vendor_details.blade.php (Commissions module: Every vendor must pay a certain commission (that may vary from a vendor to another) for the website owner (admin) on every item sold, and it's defined by the website owner (admin))
-        Route::post('update-vendor-commission', 'AdminController@updateVendorCommission');
+		// Perbarui persentase komisi vendor (oleh Admin) di tabel `vendors` (untuk setiap vendor sendiri) di Panel Admin di admin/admins/view_vendor_details.blade.php (Modul Komisi: Setiap vendor harus membayar komisi tertentu (yang dapat bervariasi dari satu vendor ke vendor lain) kepada pemilik website (admin) untuk setiap item yang terjual, dan itu didefinisikan oleh pemilik website (admin))
+		Route::post('update-vendor-commission', 'AdminController@updateVendorCommission');
 
-        Route::get('admins/{type?}', 'AdminController@admins'); // In case the authenticated user (logged-in user) is superadmin, admin, subadmin, vendor these are the three Admin Management URLs depending on the slug. The slug is the `type` column in `admins` table which can only be: superadmin, admin, subadmin, or vendor    // Used an Optional Route Parameters (or Optional Route Parameters) using a '?' question mark sign, for in case that there's no any {type} passed, the page will show ALL superadmins, admins, subadmins and vendors at the same page
-        Route::get('view-vendor-details/{id}', 'AdminController@viewVendorDetails'); // View further 'vendor' details inside Admin Management table (if the authenticated user is superadmin, admin or subadmin)
-        Route::post('update-admin-status', 'AdminController@updateAdminStatus'); // Update Admin Status using AJAX in admins.blade.php
-    
+		Route::get('admins/{type?}', 'AdminController@admins'); // Dalam kasus pengguna terotentikasi (pengguna yang masuk) adalah superadmin, admin, subadmin, vendor, ini adalah tiga URL Manajemen Admin tergantung pada slug. Slug adalah kolom `type` di tabel `admins` yang hanya bisa: superadmin, admin, subadmin, atau vendor 	// Menggunakan Parameter Rute Opsional (atau Parameter Rute Opsional) menggunakan tanda tanya '?', untuk kasus di mana tidak ada {type} yang dilewatkan, halaman akan menampilkan SEMUA superadmin, admins, subadmins dan vendors di halaman yang sama
+		Route::get('view-vendor-details/{id}', 'AdminController@viewVendorDetails'); // Lihat detail 'vendor' lebih lanjut di dalam tabel Manajemen Admin (jika pengguna terotentikasi adalah superadmin, admin, atau subadmin)
+		Route::post('update-admin-status', 'AdminController@updateAdminStatus'); // Perbarui Status Admin menggunakan AJAX di admins.blade.php
+	
 
-        // Sections (Sections, Categories, Subcategories, Products, Attributes)
-        Route::get('sections', 'SectionController@sections');
-        Route::post('update-section-status', 'SectionController@updateSectionStatus'); // Update Sections Status using AJAX in sections.blade.php
-        Route::get('delete-section/{id}', 'SectionController@deleteSection'); // Delete a section in sections.blade.php
-        Route::match(['get', 'post'], 'add-edit-section/{id?}', 'SectionController@addEditSection'); // the slug {id?} is an Optional Parameter, so if it's passed, this means Edit/Update the section, and if not passed, this means Add a Section
+		// Bagian (Bagian, Kategori, Subkategori, Produk, Atribut)
+		Route::get('sections', 'SectionController@sections');
+		Route::post('update-section-status', 'SectionController@updateSectionStatus'); // Perbarui Status Bagian menggunakan AJAX di sections.blade.php
+		Route::get('delete-section/{id}', 'SectionController@deleteSection'); // Hapus bagian di sections.blade.php
+		Route::match(['get', 'post'], 'add-edit-section/{id?}', 'SectionController@addEditSection'); // Slug {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti Edit/Perbarui bagian, dan jika tidak dilewatkan, ini berarti Tambah Bagian
 
-        // Categories
-        Route::get('categories', 'CategoryController@categories'); // Categories in Catalogue Management in Admin Panel
-        Route::post('update-category-status', 'CategoryController@updateCategoryStatus'); // Update Categories Status using AJAX in categories.blade.php
-        Route::match(['get', 'post'], 'add-edit-category/{id?}', 'CategoryController@addEditCategory'); // the slug {id?} is an Optional Parameter, so if it's passed, this means Edit/Update the Category, and if not passed, this means Add a Category
-        Route::get('append-categories-level', 'CategoryController@appendCategoryLevel'); // Show Categories <select> <option> depending on the chosen Section (show the relevant categories of the chosen section) using AJAX in admin/js/custom.js in append_categories_level.blade.php page
-        Route::get('delete-category/{id}', 'CategoryController@deleteCategory'); // Delete a category in categories.blade.php
-        Route::get('delete-category-image/{id}', 'CategoryController@deleteCategoryImage'); // Delete a category image in add_edit_category.blade.php from BOTH SERVER (FILESYSTEM) & DATABASE
+		// Kategori
+		Route::get('categories', 'CategoryController@categories'); // Kategori di Manajemen Katalog di Panel Admin
+		Route::post('update-category-status', 'CategoryController@updateCategoryStatus'); // Perbarui Status Kategori menggunakan AJAX di categories.blade.php
+		Route::match(['get', 'post'], 'add-edit-category/{id?}', 'CategoryController@addEditCategory'); // Slug {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti Edit/Perbarui Kategori, dan jika tidak dilewatkan, ini berarti Tambah Kategori
+		Route::get('append-categories-level', 'CategoryController@appendCategoryLevel'); // Tampilkan <select> <option> Kategori tergantung pada Bagian yang dipilih (tampilkan kategori yang relevan dari bagian yang dipilih) menggunakan AJAX di admin/js/custom.js di halaman append_categories_level.blade.php
+		Route::get('delete-category/{id}', 'CategoryController@deleteCategory'); // Hapus kategori di categories.blade.php
+		Route::get('delete-category-image/{id}', 'CategoryController@deleteCategoryImage'); // Hapus gambar kategori di halaman add_edit_category.blade.php dari SERVER (SISTEM FILE) & DATABASE
 
-        // Brands
-        Route::get('brands', 'BrandController@brands');
-        Route::post('update-brand-status', 'BrandController@updateBrandStatus'); // Update Brands Status using AJAX in brands.blade.php
-        Route::get('delete-brand/{id}', 'BrandController@deleteBrand'); // Delete a brand in brands.blade.php
-        Route::match(['get', 'post'], 'add-edit-brand/{id?}', 'BrandController@addEditBrand'); // the slug {id?} is an Optional Parameter, so if it's passed, this means Edit/Update the brand, and if not passed, this means Add a Brand
+		// Merk
+		Route::get('brands', 'BrandController@brands');
+		Route::post('update-brand-status', 'BrandController@updateBrandStatus'); // Perbarui Status Merk menggunakan AJAX di brands.blade.php
+		Route::get('delete-brand/{id}', 'BrandController@deleteBrand'); // Hapus merk di brands.blade.php
+		Route::match(['get', 'post'], 'add-edit-brand/{id?}', 'BrandController@addEditBrand'); // Slug {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti Edit/Perbarui merk, dan jika tidak dilewatkan, ini berarti Tambah Merk
 
-        // Products
-        Route::get('products', 'ProductsController@products'); // render products.blade.php in the Admin Panel
-        Route::post('update-product-status', 'ProductsController@updateProductStatus'); // Update Products Status using AJAX in products.blade.php
-        Route::get('delete-product/{id}', 'ProductsController@deleteProduct'); // Delete a product in products.blade.php
-        Route::match(['get', 'post'], 'add-edit-product/{id?}', 'ProductsController@addEditProduct'); // the slug (Route Parameter) {id?} is an Optional Parameter, so if it's passed, this means 'Edit/Update the Product', and if not passed, this means' Add a Product'    // GET request to render the add_edit_product.blade.php view, and POST request to submit the <form> in that view
-        Route::get('delete-product-image/{id}', 'ProductsController@deleteProductImage'); // Delete a product images (in the three folders: small, medium and large) in add_edit_product.blade.php page from BOTH SERVER (FILESYSTEM) & DATABASE
-        Route::get('delete-product-video/{id}', 'ProductsController@deleteProductVideo'); // Delete a product video in add_edit_product.blade.php page from BOTH SERVER (FILESYSTEM) & DATABASE
+		// Produk
+		Route::get('products', 'ProductsController@products'); // render halaman products.blade.php di Panel Admin
+		Route::post('update-product-status', 'ProductsController@updateProductStatus'); // Perbarui Status Produk menggunakan AJAX di products.blade.php
+		Route::get('delete-product/{id}', 'ProductsController@deleteProduct'); // Hapus produk di products.blade.php
+		Route::match(['get', 'post'], 'add-edit-product/{id?}', 'ProductsController@addEditProduct'); // Slug (Parameter Rute) {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti 'Edit/Perbarui Produk', dan jika tidak dilewatkan, ini berarti 'Tambah Produk' 	// Permintaan GET untuk merender tampilan add_edit_product.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
+		Route::get('delete-product-image/{id}', 'ProductsController@deleteProductImage'); // Hapus gambar produk (di tiga folder: small, medium, dan large) di halaman add_edit_product.blade.php dari SERVER (SISTEM FILE) & DATABASE
+		Route::get('delete-product-video/{id}', 'ProductsController@deleteProductVideo'); // Hapus video produk di halaman add_edit_product.blade.php dari SERVER (SISTEM FILE) & DATABASE
 
-        // Attributes
-        Route::match(['get', 'post'], 'add-edit-attributes/{id}', 'ProductsController@addAttributes'); // GET request to render the add_edit_attributes.blade.php view, and POST request to submit the <form> in that view
-        Route::post('update-attribute-status', 'ProductsController@updateAttributeStatus'); // Update Attributes Status using AJAX in add_edit_attributes.blade.php
-        Route::get('delete-attribute/{id}', 'ProductsController@deleteAttribute'); // Delete an attribute in add_edit_attributes.blade.php
-        Route::match(['get', 'post'], 'edit-attributes/{id}', 'ProductsController@editAttributes'); // in add_edit_attributes.blade.php
+		// Atribut
+		Route::match(['get', 'post'], 'add-edit-attributes/{id}', 'ProductsController@addAttributes'); // Permintaan GET untuk merender tampilan add_edit_attributes.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
+		Route::post('update-attribute-status', 'ProductsController@updateAttributeStatus'); // Perbarui Status Atribut menggunakan AJAX di add_edit_attributes.blade.php
+		Route::get('delete-attribute/{id}', 'ProductsController@deleteAttribute'); // Hapus atribut di add_edit_attributes.blade.php
+		Route::match(['get', 'post'], 'edit-attributes/{id}', 'ProductsController@editAttributes'); // di add_edit_attributes.blade.php
 
-        // Images
-        Route::match(['get', 'post'], 'add-images/{id}', 'ProductsController@addImages'); // GET request to render the add_edit_attributes.blade.php view, and POST request to submit the <form> in that view
-        Route::post('update-image-status', 'ProductsController@updateImageStatus'); // Update Images Status using AJAX in add_images.blade.php
-        Route::get('delete-image/{id}', 'ProductsController@deleteImage'); // Delete an image in add_images.blade.php
+		// Gambar
+		Route::match(['get', 'post'], 'add-images/{id}', 'ProductsController@addImages'); // Permintaan GET untuk merender tampilan add_edit_attributes.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
+		Route::post('update-image-status', 'ProductsController@updateImageStatus'); // Perbarui Status Gambar menggunakan AJAX di add_images.blade.php
+		Route::get('delete-image/{id}', 'ProductsController@deleteImage'); // Hapus gambar di add_images.blade.php
 
-        // Banners
-        Route::get('banners', 'BannersController@banners');
-        Route::post('update-banner-status', 'BannersController@updateBannerStatus'); // Update Categories Status using AJAX in banners.blade.php
-        Route::get('delete-banner/{id}', 'BannersController@deleteBanner'); // Delete a banner in banners.blade.php
-        Route::match(['get', 'post'], 'add-edit-banner/{id?}', 'BannersController@addEditBanner'); // the slug (Route Parameter) {id?} is an Optional Parameter, so if it's passed, this means 'Edit/Update the Banner', and if not passed, this means' Add a Banner'    // GET request to render the add_edit_banner.blade.php view, and POST request to submit the <form> in that view
+		// Spanduk
+		Route::get('banners', 'BannersController@banners');
+		Route::post('update-banner-status', 'BannersController@updateBannerStatus'); // Perbarui Status Kategori menggunakan AJAX di banners.blade.php
+		Route::get('delete-banner/{id}', 'BannersController@deleteBanner'); // Hapus spanduk di banners.blade.php
+		Route::match(['get', 'post'], 'add-edit-banner/{id?}', 'BannersController@addEditBanner'); // Slug (Parameter Rute) {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti 'Edit/Perbarui Spanduk', dan jika tidak dilewatkan, ini berarti 'Tambah Spanduk' 	// Permintaan GET untuk merender tampilan add_edit_banner.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
 
-        // Filters
-        Route::get('filters', 'FilterController@filters'); // Render filters.blade.php page
-        Route::post('update-filter-status', 'FilterController@updateFilterStatus'); // Update Filter Status using AJAX in filters.blade.php
-        Route::post('update-filter-value-status', 'FilterController@updateFilterValueStatus'); // Update Filter Value Status using AJAX in filters_values.blade.php
-        Route::get('filters-values', 'FilterController@filtersValues'); // Render filters_values.blade.php page
-        Route::match(['get', 'post'], 'add-edit-filter/{id?}', 'FilterController@addEditFilter'); // the slug (Route Parameter) {id?} is an Optional Parameter, so if it's passed, this means 'Edit/Update the filter', and if not passed, this means' Add a filter'    // GET request to render the add_edit_filter.blade.php view, and POST request to submit the <form> in that view
-        Route::match(['get', 'post'], 'add-edit-filter-value/{id?}', 'FilterController@addEditFilterValue'); // the slug (Route Parameter) {id?} is an Optional Parameter, so if it's passed, this means 'Edit/Update the Filter Value', and if not passed, this means' Add a Filter Value'    // GET request to render the add_edit_filter_value.blade.php view, and POST request to submit the <form> in that view
-        Route::post('category-filters', 'FilterController@categoryFilters'); // Show the related filters depending on the selected category <select> in category_filters.blade.php (which in turn is included by add_edit_product.php) using AJAX. Check admin/js/custom.js
+		// Filter
+		Route::get('filters', 'FilterController@filters'); // Render halaman filters.blade.php
+		Route::post('update-filter-status', 'FilterController@updateFilterStatus'); // Perbarui Status Filter menggunakan AJAX di filters.blade.php
+		Route::post('update-filter-value-status', 'FilterController@updateFilterValueStatus'); // Perbarui Status Nilai Filter menggunakan AJAX di filters_values.blade.php
+		Route::get('filters-values', 'FilterController@filtersValues'); // Render halaman filters_values.blade.php
+		Route::match(['get', 'post'], 'add-edit-filter/{id?}', 'FilterController@addEditFilter'); // Slug (Parameter Rute) {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti 'Edit/Perbarui filter', dan jika tidak dilewatkan, ini berarti 'Tambah filter' 	// Permintaan GET untuk merender tampilan add_edit_filter.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
+		Route::match(['get', 'post'], 'add-edit-filter-value/{id?}', 'FilterController@addEditFilterValue'); // Slug (Parameter Rute) {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti 'Edit/Perbarui Nilai Filter', dan jika tidak dilewatkan, ini berarti 'Tambah Nilai Filter' 	// Permintaan GET untuk merender tampilan add_edit_filter_value.blade.php, dan permintaan POST untuk mengirimkan <form> di tampilan tersebut
+		Route::post('category-filters', 'FilterController@categoryFilters'); // Tampilkan filter terkait tergantung pada <select> kategori yang dipilih di category_filters.blade.php (yang pada gilirannya disertakan oleh add_edit_product.php) menggunakan AJAX. Periksa admin/js/custom.js
 
-        // Coupons
-        Route::get('coupons', 'CouponsController@coupons'); // Render admin/coupons/coupons.blade.php page in the Admin Panel
-        Route::post('update-coupon-status', 'CouponsController@updateCouponStatus'); // Update Coupon Status (active/inactive) via AJAX in admin/coupons/coupons.blade.php, check admin/js/custom.js
-        Route::get('delete-coupon/{id}', 'CouponsController@deleteCoupon'); // Delete a Coupon via AJAX in admin/coupons/coupons.blade.php, check admin/js/custom.js
+		// Kupon
+		Route::get('coupons', 'CouponsController@coupons'); // Render halaman admin/coupons/coupons.blade.php di Panel Admin
+		Route::post('update-coupon-status', 'CouponsController@updateCouponStatus'); // Perbarui Status Kupon (aktif/nonaktif) melalui AJAX di admin/coupons/coupons.blade.php, periksa admin/js/custom.js
+		Route::get('delete-coupon/{id}', 'CouponsController@deleteCoupon'); // Hapus Kupon melalui AJAX di admin/coupons/coupons.blade.php, periksa admin/js/custom.js
 
-        // Render admin/coupons/add_edit_coupon.blade.php page with 'GET' request ('Edit/Update the Coupon') if the {id?} Optional Parameter is passed, or if it's not passed, it's a GET request too to 'Add a Coupon', or it's a POST request for the HTML Form submission in the same page
-        Route::match(['get', 'post'], 'add-edit-coupon/{id?}', 'CouponsController@addEditCoupon'); // the slug (Route Parameter) {id?} is an Optional Parameter, so if it's passed, this means 'Edit/Update the Coupon', and if not passed, this means' Add a Coupon'    // GET request to render the add_edit_coupon.blade.php view (whether Add or Edit depending on passing or not passing the Optional Parameter {id?}), and POST request to submit the <form> in that same page
+		// Render halaman admin/coupons/add_edit_coupon.blade.php dengan permintaan 'GET' ('Edit/Perbarui Kupon') jika Parameter Opsional {id?} dilewatkan, atau jika tidak dilewatkan, itu juga permintaan GET untuk 'Tambah Kupon', atau itu adalah permintaan POST untuk pengiriman Form HTML di halaman yang sama
+		Route::match(['get', 'post'], 'add-edit-coupon/{id?}', 'CouponsController@addEditCoupon'); // Slug (Parameter Rute) {id?} adalah Parameter Opsional, jadi jika dilewatkan, ini berarti 'Edit/Perbarui Kupon', dan jika tidak dilewatkan, ini berarti 'Tambah Kupon' 	// Permintaan GET untuk merender tampilan add_edit_coupon.blade.php (apakah Tambah atau Edit tergantung pada apakah Parameter Opsional {id?} dilewatkan atau tidak), dan permintaan POST untuk mengirimkan <form> di halaman yang sama
 
-        // Users
-        Route::get('users', 'UserController@users'); // Render admin/users/users.blade.php page in the Admin Panel
-        Route::post('update-user-status', 'UserController@updateUserStatus'); // Update User Status (active/inactive) via AJAX in admin/users/users.blade.php, check admin/js/custom.js
+		// Pengguna
+		Route::get('users', 'UserController@users'); // Render halaman admin/users/users.blade.php di Panel Admin
+		Route::post('update-user-status', 'UserController@updateUserStatus'); // Perbarui Status Pengguna (aktif/nonaktif) melalui AJAX di admin/users/users.blade.php, periksa admin/js/custom.js
 
-        // Orders
-        // Render admin/orders/orders.blade.php page (Orders Management section) in the Admin Panel
-        Route::get('orders', 'OrderController@orders');
+		// Pesanan
+		// Render halaman admin/orders/orders.blade.php (bagian Manajemen Pesanan) di Panel Admin
+		Route::get('orders', 'OrderController@orders');
 
-        // Render admin/orders/order_details.blade.php (View Order Details page) when clicking on the View Order Details icon in admin/orders/orders.blade.php (Orders tab under Orders Management section in Admin Panel)
-        Route::get('orders/{id}', 'OrderController@orderDetails'); 
+		// Render halaman admin/orders/order_details.blade.php (Lihat halaman Detail Pesanan) ketika mengklik ikon Lihat Detail Pesanan di admin/orders/orders.blade.php (tab Pesanan di bawah bagian Manajemen Pesanan di Panel Admin)
+		Route::get('orders/{id}', 'OrderController@orderDetails'); 
 
-        // Update Order Status (which is determined by 'admin'-s ONLY, not 'vendor'-s, in contrast to "Update Item Status" which can be updated by both 'vendor'-s and 'admin'-s) (Pending, Shipped, In Progress, Canceled, ...) in admin/orders/order_details.blade.php in Admin Panel
-        // Note: The `order_statuses` table contains all kinds of order statuses (that can be updated by 'admin'-s ONLY in `orders` table) like: pending, in progress, shipped, canceled, ...etc. In `order_statuses` table, the `name` column can be: 'New', 'Pending', 'Canceled', 'In Progress', 'Shipped', 'Partially Shipped', 'Delivered', 'Partially Delivered' and 'Paid'. 'Partially Shipped': If one order has products from different vendors, and one vendor has shipped their product to the customer while other vendor (or vendors) didn't!. 'Partially Delivered': if one order has products from different vendors, and one vendor has shipped and DELIVERED their product to the customer while other vendor (or vendors) didn't!    // The `order_item_statuses` table contains all kinds of order statuses (that can be updated by both 'vendor'-s and 'admin'-s in `orders_products` table) like: pending, in progress, shipped, canceled, ...etc.
-        Route::post('update-order-status', 'OrderController@updateOrderStatus');
+		// Perbarui Status Pesanan (yang ditentukan oleh 'admin' SAJA, bukan 'vendor', berbeda dengan "Perbarui Status Item" yang dapat diperbarui oleh 'vendor' dan 'admin') (Tertunda, Dikirim, Dalam Proses, Dibatalkan, ...) di admin/orders/order_details.blade.php di Panel Admin
+		// Catatan: Tabel `order_statuses` berisi semua jenis status pesanan (yang dapat diperbarui oleh 'admin' SAJA di tabel `orders`) seperti: tertunda, dalam proses, dikirim, dibatalkan, ...dll. Di tabel `order_statuses`, kolom `name` bisa: 'Baru', 'Tertunda', 'Dibatalkan', 'Dalam Proses', 'Dikirim', 'Dikirim Sebagian', 'Terkirim', 'Terkirim Sebagian' dan 'Dibayar'. 'Dikirim Sebagian': Jika satu pesanan memiliki produk dari vendor yang berbeda, dan satu vendor telah mengirimkan produknya ke pelanggan sementara vendor lain tidak!. 'Terkirim Sebagian': jika satu pesanan memiliki produk dari vendor yang berbeda, dan satu vendor telah mengirimkan dan MENYAMPAIKAN produknya ke pelanggan sementara vendor lain tidak! 	// Tabel `order_item_statuses` berisi semua jenis status pesanan (yang dapat diperbarui oleh 'vendor' dan 'admin' di tabel `orders_products`) seperti: tertunda, dalam proses, dikirim, dibatalkan, ...dll.
+		Route::post('update-order-status', 'OrderController@updateOrderStatus');
 
-        // Update Item Status (which can be determined by both 'vendor'-s and 'admin'-s, in contrast to "Update Order Status" which is updated by 'admin'-s ONLY, not 'vendor'-s) (Pending, In Progress, Shipped, Delivered, ...) in admin/orders/order_details.blade.php in Admin Panel
-        // Note: The `order_statuses` table contains all kinds of order statuses (that can be updated by 'admin'-s ONLY in `orders` table) like: pending, in progress, shipped, canceled, ...etc. In `order_statuses` table, the `name` column can be: 'New', 'Pending', 'Canceled', 'In Progress', 'Shipped', 'Partially Shipped', 'Delivered', 'Partially Delivered' and 'Paid'. 'Partially Shipped': If one order has products from different vendors, and one vendor has shipped their product to the customer while other vendor (or vendors) didn't!. 'Partially Delivered': if one order has products from different vendors, and one vendor has shipped and DELIVERED their product to the customer while other vendor (or vendors) didn't!    // The `order_item_statuses` table contains all kinds of order statuses (that can be updated by both 'vendor'-s and 'admin'-s in `orders_products` table) like: pending, in progress, shipped, canceled, ...etc.
-        Route::post('update-order-item-status', 'OrderController@updateOrderItemStatus');
+		// Perbarui Status Item (yang dapat ditentukan oleh 'vendor' dan 'admin', berbeda dengan "Perbarui Status Pesanan" yang diperbarui oleh 'admin' SAJA, bukan 'vendor') (Tertunda, Dalam Proses, Dikirim, Terkirim, ...) di admin/orders/order_details.blade.php di Panel Admin
+		// Catatan: Tabel `order_statuses` berisi semua jenis status pesanan (yang dapat diperbarui oleh 'admin' SAJA di tabel `orders`) seperti: tertunda, dalam proses, dikirim, dibatalkan, ...dll. Di tabel `order_statuses`, kolom `name` bisa: 'Baru', 'Tertunda', 'Dibatalkan', 'Dalam Proses', 'Dikirim', 'Dikirim Sebagian', 'Terkirim', 'Terkirim Sebagian' dan 'Dibayar'. 'Dikirim Sebagian': Jika satu pesanan memiliki produk dari vendor yang berbeda, dan satu vendor telah mengirimkan produknya ke pelanggan sementara vendor lain tidak!. 'Terkirim Sebagian': jika satu pesanan memiliki produk dari vendor yang berbeda, dan satu vendor telah mengirimkan dan MENYAMPAIKAN produknya ke pelanggan sementara vendor lain tidak!
+		Route::post('update-order-item-status', 'OrderController@updateOrderItemStatus');
 
-        // Orders Invoices
-        // Render order invoice page (HTML) in order_invoice.blade.php
-        Route::get('orders/invoice/{id}', 'OrderController@viewOrderInvoice'); 
+		// Faktur Pesanan
+		// Render halaman faktur pesanan (HTML) di order_invoice.blade.php
+		Route::get('orders/invoice/{id}', 'OrderController@viewOrderInvoice'); 
 
-        // Render order PDF invoice in order_invoice.blade.php using Dompdf Package
-        Route::get('orders/invoice/pdf/{id}', 'OrderController@viewPDFInvoice'); 
+		// Render faktur PDF pesanan di order_invoice.blade.php menggunakan Paket Dompdf
+		Route::get('orders/invoice/pdf/{id}', 'OrderController@viewPDFInvoice'); 
 
-        // Shipping Charges module
-        // Render the Shipping Charges page (admin/shipping/shipping_charges.blade.php) in the Admin Panel for 'admin'-s only, not for vendors
-        Route::get('shipping-charges', 'ShippingController@shippingCharges');
+		// Modul Biaya Pengiriman
+		// Render halaman Biaya Pengiriman (admin/shipping/shipping_charges.blade.php) di Panel Admin hanya untuk 'admin', bukan untuk vendor
+		Route::get('shipping-charges', 'ShippingController@shippingCharges');
 
-        // Update Shipping Status (active/inactive) via AJAX in admin/shipping/shipping_charages.blade.php, check admin/js/custom.js
-        Route::post('update-shipping-status', 'ShippingController@updateShippingStatus');
+		// Perbarui Status Pengiriman (aktif/nonaktif) melalui AJAX di admin/shipping/shipping_charages.blade.php, periksa admin/js/custom.js
+		Route::post('update-shipping-status', 'ShippingController@updateShippingStatus');
 
-        // Render admin/shipping/edit_shipping_charges.blade.php page in case of HTTP 'GET' request ('Edit/Update Shipping Charges'), or hadle the HTML Form submission in the same page in case of HTTP 'POST' request
-        Route::match(['get', 'post'], 'edit-shipping-charges/{id}', 'ShippingController@editShippingCharges'); 
-
-
-
-        // Newsletter Subscribers module
-        // Render admin/subscribers/subscribers.blade.php page (Show all Newsletter subscribers in the Admin Panel)
-        Route::get('subscribers', 'NewsletterController@subscribers');
-
-        // Update Subscriber Status (active/inactive) via AJAX in admin/subscribers/subscribers.blade.php, check admin/js/custom.js
-        Route::post('update-subscriber-status', 'NewsletterController@updateSubscriberStatus');
-
-        // Delete a Subscriber via AJAX in admin/subscribers/subscribers.blade.php, check admin/js/custom.js
-        Route::get('delete-subscriber/{id}', 'NewsletterController@deleteSubscriber'); 
+		// Render halaman admin/shipping/edit_shipping_charges.blade.php jika ada permintaan HTTP 'GET' ('Edit/Perbarui Biaya Pengiriman'), atau tangani pengiriman Form HTML di halaman yang sama jika ada permintaan HTTP 'POST'
+		Route::match(['get', 'post'], 'edit-shipping-charges/{id}', 'ShippingController@editShippingCharges'); 
 
 
 
-        // Export subscribers (`newsletter_subscribers` database table) as an Excel file using Maatwebsite/Laravel Excel Package in admin/subscribers/subscribers.blade.php
-        Route::get('export-subscribers', 'NewsletterController@exportSubscribers');
+		// Modul Pelanggan Buletin
+		// Render halaman admin/subscribers/subscribers.blade.php (Tampilkan semua pelanggan Buletin di Panel Admin)
+		Route::get('subscribers', 'NewsletterController@subscribers');
 
-        // User Ratings & Reviews
-        // Render admin/ratings/ratings.blade.php page in the Admin Panel
-        Route::get('ratings', 'RatingController@ratings');
+		// Perbarui Status Pelanggan (aktif/nonaktif) melalui AJAX di admin/subscribers/subscribers.blade.php, periksa admin/js/custom.js
+		Route::post('update-subscriber-status', 'NewsletterController@updateSubscriberStatus');
 
-        // Update Rating Status (active/inactive) via AJAX in admin/ratings/ratings.blade.php, check admin/js/custom.js
-        Route::post('update-rating-status', 'RatingController@updateRatingStatus');
+		// Hapus Pelanggan melalui AJAX di admin/subscribers/subscribers.blade.php, periksa admin/js/custom.js
+		Route::get('delete-subscriber/{id}', 'NewsletterController@deleteSubscriber'); 
 
-        // Delete a Rating via AJAX in admin/ratings/ratings.blade.php, check admin/js/custom.js
-        Route::get('delete-rating/{id}', 'RatingController@deleteRating'); 
-    });
+
+
+		// Ekspor pelanggan (tabel database `newsletter_subscribers`) sebagai file Excel menggunakan Paket Maatwebsite/Laravel Excel di admin/subscribers/subscribers.blade.php
+		Route::get('export-subscribers', 'NewsletterController@exportSubscribers');
+
+		// Peringkat & Ulasan Pengguna
+		// Render halaman admin/ratings/ratings.blade.php di Panel Admin
+		Route::get('ratings', 'RatingController@ratings');
+
+		// Perbarui Status Peringkat (aktif/nonaktif) melalui AJAX di admin/ratings/ratings.blade.php, periksa admin/js/custom.js
+		Route::post('update-rating-status', 'RatingController@updateRatingStatus');
+
+		// Hapus Peringkat melalui AJAX di admin/ratings/ratings.blade.php, periksa admin/js/custom.js
+		Route::get('delete-rating/{id}', 'RatingController@deleteRating'); 
+	});
 
 });
 
@@ -175,155 +188,184 @@ Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function
 
 
 
-// User download order PDF invoice (We'll use the same viewPDFInvoice() function (but with different routes/URLs!) to render the PDF invoice for 'admin'-s in the Admin Panel and for the user to download it!) (we created this route outside outside the Admin Panel routes so that the user could use it!)
+// Unduh faktur PDF pesanan Pengguna (Kami akan menggunakan fungsi viewPDFInvoice() yang sama (tetapi dengan rute/URL yang berbeda!) untuk merender faktur PDF untuk 'admin' di Panel Admin dan agar pengguna dapat mengunduhnya!) (kami membuat rute ini di luar rute Panel Admin agar pengguna dapat menggunakannya!)
 Route::get('orders/invoice/download/{id}', 'App\Http\Controllers\Admin\OrderController@viewPDFInvoice');
 
 
-
-
-
-
-// Second: FRONT section routes:
+// Kedua: Rute bagian DEPAN:
 Route::namespace('App\Http\Controllers\Front')->group(function() {
-    Route::get('/', 'IndexController@index');
+	Route::get('/', 'IndexController@index');
 
 
-    // Dynamic Routes for the `url` column in the `categories` table using a foreach loop    // Listing/Categories Routes
-    // Important Note: When you run this Laravel project for the first time and if you're running  the "php artisan migrate" command for the first time, before that you must comment out the $catUrls variable and the following foreach loop in web.php file (routes file), because when we run that artisan command, by then the `categories` table has not been created yet, and this causes an error, so make sure to comment out this code in web.php file before running the "php artisan migrate" command for the first time.
-    $catUrls = \App\Models\Category::select('url')->where('status', 1)->get()->pluck('url')->toArray(); // Routes like: /men, /women, /shirts, ...
-    // dd($catUrls);
-    foreach ($catUrls as $key => $url) {
-        // Important Note: When you run this Laravel project for the first time and if you're running  the "php artisan migrate" command for the first time, before that you must comment out the $catUrls variable and the following foreach loop in web.php file (routes file), because when we run that artisan command, by then the `categories` table has not been created yet, and this causes an error, so make sure to comment out this code in web.php file before running the "php artisan migrate" command for the first time.
-        Route::match(['get', 'post'], '/' . $url, 'ProductsController@listing'); // used match() for the HTTP 'GET' requests to render listing.blade.php page and the HTTP 'POST' method for the AJAX request of the Sorting Filter or the HTML Form submission and jQuery for the Sorting Filter WITHOUT AJAX, AND ALSO for submitting the Search Form in listing.blade.php    // e.g.    /men    or    /computers    // Important Note: When you run this Laravel project for the first time and if you're running  the "php artisan migrate" command for the first time, before that you must comment out the $catUrls variable and the following foreach loop in web.php file (routes file), because when we run that artisan command, by then the `categories` table has not been created yet, and this causes an error, so make sure to comment out this code in web.php file before running the "php artisan migrate" command for the first time.
-    }
+	// Rute Dinamis untuk kolom `url` di tabel `categories` menggunakan loop foreach 	// Rute Daftar/Kategori
+	// Catatan Penting: Saat Anda menjalankan proyek Laravel ini untuk pertama kalinya dan jika Anda menjalankan perintah "php artisan migrate" untuk pertama kalinya, sebelum itu Anda harus mengomentari variabel $catUrls dan loop foreach berikut di file web.php (file rute), karena ketika kita menjalankan perintah artisan tersebut, tabel `categories` belum dibuat, dan ini menyebabkan kesalahan, jadi pastikan untuk mengomentari kode ini di file web.php sebelum menjalankan perintah "php artisan migrate" untuk pertama kalinya.
+	$catUrls = \App\Models\Category::select('url')->where('status', 1)->get()->pluck('url')->toArray(); // Rute seperti: /men, /women, /shirts, ...
+	// dd($catUrls);
+	foreach ($catUrls as $key => $url) {
+		// Catatan Penting: Saat Anda menjalankan proyek Laravel ini untuk pertama kalinya dan jika Anda menjalankan perintah "php artisan migrate" untuk pertama kalinya, sebelum itu Anda harus mengomentari variabel $catUrls dan loop foreach berikut di file web.php (file rute), karena ketika kita menjalankan perintah artisan tersebut, tabel `categories` belum dibuat, dan ini menyebabkan kesalahan, jadi pastikan untuk mengomentari kode ini di file web.php sebelum menjalankan perintah "php artisan migrate" untuk pertama kalinya.
+		Route::match(['get', 'post'], '/' . $url, 'ProductsController@listing'); // digunakan metode match() untuk permintaan HTTP 'GET' untuk merender halaman listing.blade.php dan metode HTTP 'POST' untuk permintaan AJAX Filter Penyortiran atau pengiriman Form HTML dan jQuery untuk Filter Penyortiran TANPA AJAX, DAN JUGA untuk mengirimkan Form Pencarian di listing.blade.php 	// misalnya 	/men 	atau 	/computers 	// Catatan Penting: Saat Anda menjalankan proyek Laravel ini untuk pertama kalinya dan jika Anda menjalankan perintah "php artisan migrate" untuk pertama kalinya, sebelum itu Anda harus mengomentari variabel $catUrls dan loop foreach berikut di file web.php (file rute), karena ketika kita menjalankan perintah artisan tersebut, tabel `categories` belum dibuat, dan ini menyebabkan kesalahan, jadi pastikan untuk mengomentari kode ini di file web.php sebelum menjalankan perintah "php artisan migrate" untuk pertama kalinya.
+	}
 
 
-    // Vendor Login/Register
-    Route::get('vendor/login-register', 'VendorController@loginRegister'); // render vendor login_register.blade.php page
+	// Login/Daftar Vendor
+	Route::get('vendor/login-register', 'VendorController@loginRegister'); // merender halaman login_register.blade.php vendor
 
-    // Vendor Register
-    Route::post('vendor/register', 'VendorController@vendorRegister'); // the register HTML form submission in vendor login_register.blade.php page
+	// Daftar Vendor
+	Route::post('vendor/register', 'VendorController@vendorRegister'); // pengiriman form HTML pendaftaran di halaman login_register.blade.php vendor
 
-    // Confirm Vendor Account (from 'vendor_confirmation.blade.php) from the mail by Mailtrap
-    Route::get('vendor/confirm/{code}', 'VendorController@confirmVendor'); // {code} is the base64 encoded vendor e-mail with which they have registered which is a Route Parameters/URL Paramters: https://laravel.com/docs/9.x/routing#required-parameters    // this route is requested (accessed/opened) from inside the mail sent to vendor (vendor_confirmation.blade.php)
+	// Konfirmasi Akun Vendor (dari 'vendor_confirmation.blade.php) dari email oleh Mailtrap
+	Route::get('vendor/confirm/{code}', 'VendorController@confirmVendor'); // {code} adalah email vendor yang di-encode base64 yang dengannya mereka telah mendaftar yang merupakan Parameter Rute/Parameter URL: https://laravel.com/docs/9.x/routing#required-parameters 	// rute ini diminta (diakses/dibuka) dari dalam email yang dikirim ke vendor (vendor_confirmation.blade.php)
 
-    // Render Single Product Detail Page in front/products/detail.blade.php
-    Route::get('/product/{id}', 'ProductsController@detail');
+	// Render Halaman Detail Produk Tunggal di front/products/detail.blade.php
+	Route::get('/product/{id}', 'ProductsController@detail');
 
-    // The AJAX call from front/js/custom.js file, to show the the correct related `price` and `stock` depending on the selected `size` (from the `products_attributes` table)) by clicking the size <select> box in front/products/detail.blade.php
-    Route::post('get-product-price', 'ProductsController@getProductPrice');
+	// Panggilan AJAX dari file front/js/custom.js, untuk menampilkan `harga` dan `stok` terkait yang benar tergantung pada `ukuran` yang dipilih (dari tabel `products_attributes`)) dengan mengklik kotak <select> ukuran di front/products/detail.blade.php
+	Route::post('get-product-price', 'ProductsController@getProductPrice');
 
-    // Show all Vendor products in front/products/vendor_listing.blade.php    // This route is accessed from the <a> HTML element in front/products/vendor_listing.blade.php
-    Route::get('/products/{vendorid}', 'ProductsController@vendorListing');
+	// Tampilkan semua produk Vendor di front/products/vendor_listing.blade.php 	// Rute ini diakses dari elemen HTML <a> di front/products/vendor_listing.blade.php
+	Route::get('/products/{vendorid}', 'ProductsController@vendorListing');
 
-    // Add to Cart <form> submission in front/products/detail.blade.php
-    Route::post('cart/add', 'ProductsController@cartAdd');
+	// Tambahkan ke pengiriman <form> Keranjang di front/products/detail.blade.php
+	Route::post('cart/add', 'ProductsController@cartAdd');
 
-    // Render Cart page (front/products/cart.blade.php)    // this route is accessed from the <a> HTML tag inside the flash message inside cartAdd() method in Front/ProductsController.php (inside front/products/detail.blade.php)
-    Route::get('cart', 'ProductsController@cart')->name('cart');
+	// Render halaman Keranjang (front/products/cart.blade.php) 	// rute ini diakses dari tag HTML <a> di dalam pesan flash di dalam metode cartAdd() di Front/ProductsController.php (di dalam front/products/detail.blade.php)
+	Route::get('cart', 'ProductsController@cart')->name('cart');
 
-    // Update Cart Item Quantity AJAX call in front/products/cart_items.blade.php. Check front/js/custom.js
-    Route::post('cart/update', 'ProductsController@cartUpdate');
+	// Perbarui Kuantitas Item Keranjang Panggilan AJAX di front/products/cart_items.blade.php. Periksa front/js/custom.js
+	Route::post('cart/update', 'ProductsController@cartUpdate');
 
-    // Delete a Cart Item AJAX call in front/products/cart_items.blade.php. Check front/js/custom.js
-    Route::post('cart/delete', 'ProductsController@cartDelete');
+	// Hapus Item Keranjang Panggilan AJAX di front/products/cart_items.blade.php. Periksa front/js/custom.js
+	Route::post('cart/delete', 'ProductsController@cartDelete');
 
 
 
-// Render User Login/Register page (front/users/login_register.blade.php)
+// Render halaman Login/Daftar Pengguna (front/users/login_register.blade.php)
 Route::get('user/login-register', ['as' => 'login', 'uses' => 'UserController@loginRegister']); 
 
 // Menangani akses GET ke /user/register agar tidak error
 Route::get('user/register', function () {
-    return redirect('user/login-register');
+	return redirect('user/login-register');
 });
 
-// User Registration (form submission via AJAX)
+// Pendaftaran Pengguna (pengiriman form melalui AJAX)
 Route::post('user/register', 'UserController@userRegister');
 
 
-    // User Login (in front/users/login_register.blade.php) <form> submission using an AJAX request. Check front/js/custom.js
-    Route::post('user/login', 'UserController@userLogin');
+	// Login Pengguna (di front/users/login_register.blade.php) pengiriman <form> menggunakan permintaan AJAX. Periksa front/js/custom.js
+	Route::post('user/login', 'UserController@userLogin');
 
-    // User logout (This route is accessed from Logout tab in the drop-down menu in the header (in front/layout/header.blade.php))
-    Route::get('user/logout', 'UserController@userLogout');
+	// Logout Pengguna (Rute ini diakses dari tab Logout di menu drop-down di header (di front/layout/header.blade.php))
+	Route::get('user/logout', 'UserController@userLogout');
 
-    // User Forgot Password Functionality (this route is accessed from the <a> tag in front/users/login_register.blade.php through a 'GET' request, and through a 'POST' request when the HTML Form is submitted in front/users/forgot_password.blade.php)
-    Route::match(['get', 'post'], 'user/forgot-password', 'UserController@forgotPassword'); // We used match() method to use get() to render the front/users/forgot_password.blade.php page, and post() when the HTML Form in the same page is submitted    // The POST request is from an AJAX request. Check front/js/custom.js
+	// Fungsionalitas Lupa Kata Sandi Pengguna (rute ini diakses dari tag <a> di front/users/login_register.blade.php melalui permintaan 'GET', dan melalui permintaan 'POST' ketika Form HTML dikirimkan di front/users/forgot_password.blade.php)
+	Route::match(['get', ' post'], 'user/forgot-password', 'UserController@forgotPassword'); // Kami menggunakan metode match() untuk menggunakan get() untuk merender halaman front/users/forgot_password.blade.php, dan post() ketika Form HTML di halaman yang sama dikirimkan 	// Permintaan POST berasal dari permintaan AJAX. Periksa front/js/custom.js
 
-    // User account Confirmation E-mail which contains the 'Activation Link' to activate the user account (in resources/views/emails/confirmation.blade.php, using Mailtrap)
-    Route::get('user/confirm/{code}', 'UserController@confirmAccount'); // {code} is the base64 encoded user's 'Activation Code' sent to the user in the Confirmation E-mail with which they have registered, which is received as a Route Parameters/URL Paramters in the 'Activation Link'    // this route is requested (accessed/opened) from inside the mail sent to user (in resources/views/emails/confirmation.blade.php)
+	// Konfirmasi Akun Pengguna E-mail yang berisi 'Tautan Aktivasi' untuk mengaktifkan akun pengguna (di resources/views/emails/confirmation.blade.php, menggunakan Mailtrap)
+	Route::get('user/confirm/{code}', 'UserController@confirmAccount'); // {code} adalah 'Kode Aktivasi' pengguna yang di-encode base64 yang dikirimkan ke pengguna di E-mail Konfirmasi yang dengannya mereka telah mendaftar, yang diterima sebagai Parameter Rute/Parameter URL di 'Tautan Aktivasi' 	// rute ini diminta (diakses/dibuka) dari dalam email yang dikirim ke pengguna (di resources/views/emails/confirmation.blade.php)
 
-    // Website Search Form (to search for all website products). Check the HTML Form in front/layout/header.blade.php
-    Route::get('search-products', 'ProductsController@listing');
+	// Form Pencarian Website (untuk mencari semua produk website). Periksa Form HTML di front/layout/header.blade.php
+	Route::get('search-products', 'ProductsController@listing');
 
-    // PIN code Availability Check: check if the PIN code of the user's Delivery Address exists in our database (in both `cod_pincodes` and `prepaid_pincodes`) or not in front/products/detail.blade.php via AJAX. Check front/js/custom.js
-    Route::post('check-pincode', 'ProductsController@checkPincode');
+	// Pemeriksaan Ketersediaan Kode PIN: periksa apakah kode PIN Alamat Pengiriman pengguna ada di database kami (di `cod_pincodes` dan `prepaid_pincodes`) atau tidak di front/products/detail.blade.php melalui AJAX. Periksa front/js/custom.js
+	Route::post('check-pincode', 'ProductsController@checkPincode');
 
-    // Render the Contact Us page (front/pages/contact.blade.php) using GET HTTP Requests, or the HTML Form Submission using POST HTTP Requests
-    Route::match(['get', 'post'], 'contact', 'CmsController@contact');
+	// Render halaman Hubungi Kami (front/pages/contact.blade.php) menggunakan Permintaan HTTP GET, atau Pengiriman Form HTML menggunakan Permintaan HTTP POST
+	Route::match(['get', 'post'], 'contact', 'CmsController@contact');
 
-    // Add a Newsletter Subscriber email HTML Form Submission in front/layout/footer.blade.php when clicking on the Submit button (using an AJAX Request/Call)
-    Route::post('add-subscriber-email', 'NewsletterController@addSubscriber');
+	// Tambah pengiriman Form HTML email Pelanggan Buletin di front/layout/footer.blade.php ketika mengklik tombol Kirim (menggunakan Permintaan/Panggilan AJAX)
+	Route::post('add-subscriber-email', 'NewsletterController@addSubscriber');
 
-    // Add Rating & Review on a product in front/products/detail.blade.php
-    Route::post('add-rating', 'RatingController@addRating');
-
-
-
-
-    // Protecting the routes of user (user must be authenticated/logged in) (to prevent access to these links while being unauthenticated/not being logged in (logged out))
-    Route::group(['middleware' => ['auth']], function() {
-        // Render User Account page with 'GET' request (front/users/user_account.blade.php), or the HTML Form submission in the same page with 'POST' request using AJAX (to update user details). Check front/js/custom.js
-        Route::match(['GET', 'POST'], 'user/account', 'UserController@userAccount');
-
-        // User Account Update Password HTML Form submission via AJAX. Check front/js/custom.js
-        Route::post('user/update-password', 'UserController@userUpdatePassword');
-
-        // Coupon Code redemption (Apply coupon) / Coupon Code HTML Form submission via AJAX in front/products/cart_items.blade.php, check front/js/custom.js
-        Route::post('/apply-coupon', 'ProductsController@applyCoupon'); // Important Note: We added this route here as a protected route inside the 'auth' middleware group because ONLY logged in/authenticated users are allowed to redeem Coupons!
-
-        // Checkout page (using match() method for the 'GET' request for rendering the front/products/checkout.blade.php page or the 'POST' request for the HTML Form submission in the same page (for submitting the user's Delivery Address and Payment Method))
-        Route::match(['GET', 'POST'], '/checkout', 'ProductsController@checkout');
-
-        // Edit Delivery Addresses (Page refresh and fill in the <input> fields with the authenticated/logged in user Delivery Addresses from the `delivery_addresses` database table when clicking on the Edit button) in front/products/delivery_addresses.blade.php (which is 'include'-ed in front/products/checkout.blade.php) via AJAX, check front/js/custom.js
-        Route::post('get-delivery-address', 'AddressController@getDeliveryAddress');
-
-        // Save Delivery Addresses via AJAX (save the delivery addresses of the authenticated/logged-in user in `delivery_addresses` database table when submitting the HTML Form) in front/products/delivery_addresses.blade.php (which is 'include'-ed in front/products/checkout.blade.php) via AJAX, check front/js/custom.js
-        Route::post('save-delivery-address', 'AddressController@saveDeliveryAddress');
-
-        // Remove Delivery Addresse via AJAX (Page refresh and fill in the <input> fields with the authenticated/logged-in user Delivery Addresses details from the `delivery_addresses` database table when clicking on the Remove button) in front/products/delivery_addresses.blade.php (which is 'include'-ed in front/products/checkout.blade.php) via AJAX, check front/js/custom.js
-        Route::post('remove-delivery-address', 'AddressController@removeDeliveryAddress');
-
-        // Rendering Thanks page (after placing an order)
-        Route::get('thanks', 'ProductsController@thanks');
-
-        // Render User 'My Orders' page
-        Route::get('user/orders/{id?}', 'OrderController@orders'); // If the slug {id?} (Optional Parameters) is passed in, this means go to the front/orders/order_details.blade.php page, and if not, this means go to the front/orders/orders.blade.php page
+	// Tambah Peringkat & Ulasan pada produk di front/products/detail.blade.php
+	Route::post('add-rating', 'RatingController@addRating');
 
 
 
-        // PayPal routes:
-        // PayPal payment gateway integration in Laravel (this route is accessed from checkout() method in Front/ProductsController.php). Rendering front/paypal/paypal.blade.php page
-        Route::get('paypal', 'PaypalController@paypal');
 
-        // Make a PayPal payment
-        Route::post('pay', 'PaypalController@pay')->name('payment'); 
+	// Melindungi rute pengguna (pengguna harus terotentikasi/masuk) (untuk mencegah akses ke tautan ini saat tidak terotentikasi/belum masuk (keluar))
+	Route::group(['middleware' => ['auth']], function() {
+		// Render halaman Akun Pengguna dengan permintaan 'GET' (front/users/user_account.blade.php), atau pengiriman Form HTML di halaman yang sama dengan permintaan 'POST' menggunakan AJAX (untuk memperbarui detail pengguna). Periksa front/js/custom.js
+		Route::match(['GET', 'POST'], 'user/account', 'UserController@userAccount');
 
-        // PayPal successful payment
-        Route::get('success', 'PaypalController@success');
+		// Perbarui Kata Sandi Akun Pengguna pengiriman Form HTML melalui AJAX. Periksa front/js/custom.js
+		Route::post('user/update-password', 'UserController@userUpdatePassword');
 
-        // PayPal failed payment
-        Route::get('error', 'PaypalController@error');
+		// Penebusan Kode Kupon (Terapkan kupon) / pengiriman Form HTML Kode Kupon melalui AJAX di front/products/cart_items.blade.php, periksa front/js/custom.js
+		Route::post('/apply-coupon', 'ProductsController@applyCoupon'); // Catatan Penting: Kami menambahkan rute ini di sini sebagai rute yang dilindungi di dalam grup middleware 'auth' karena HANYA pengguna yang masuk/terotentikasi yang diizinkan untuk menebus Kupon!
+
+		// Halaman Checkout (menggunakan metode match() untuk permintaan 'GET' untuk merender halaman front/products/checkout.blade.php atau permintaan 'POST' untuk pengiriman Form HTML di halaman yang sama (untuk mengirimkan Alamat Pengiriman dan Metode Pembayaran pengguna))
+		Route::match(['GET', 'POST'], '/checkout', 'ProductsController@checkout');
+
+		// Edit Alamat Pengiriman (Muat ulang halaman dan isi bidang <input> dengan Alamat Pengiriman pengguna terotentikasi/masuk dari tabel database `delivery_addresses` saat mengklik tombol Edit) di front/products/delivery_addresses.blade.php (yang 'disertakan' di front/products/checkout.blade.php) via AJAX, periksa front/js/custom.js
+		Route::post('get-delivery-address', 'AddressController@getDeliveryAddress');
+
+		// Simpan Alamat Pengiriman melalui AJAX (simpan alamat pengiriman pengguna terotentikasi/masuk di tabel database `delivery_addresses` saat mengirimkan Form HTML) di front/products/delivery_addresses.blade.php (yang 'disertakan' di front/products/checkout.blade.php) melalui AJAX, periksa front/js/custom.js
+		Route::post('save-delivery-address', 'AddressController@saveDeliveryAddress');
+
+		// Hapus Alamat Pengiriman melalui AJAX (Muat ulang halaman dan isi bidang <input> dengan detail Alamat Pengiriman pengguna terotentikasi/masuk dari tabel database `delivery_addresses` saat mengklik tombol Hapus) di front/products/delivery_addresses.blade.php (yang 'disertakan' di front/products/checkout.blade.php) melalui AJAX, periksa front/js/custom.js
+		Route::post('remove-delivery-address', 'AddressController@removeDeliveryAddress');
+
+		// Merender halaman Terima Kasih (setelah melakukan pemesanan)
+		Route::get('thanks', 'ProductsController@thanks');
+
+		// Merender halaman 'Pesanan Saya' Pengguna
+		Route::get('user/orders/{id?}', 'OrderController@orders'); // Jika slug {id?} (Parameter Opsional) dilewatkan, ini berarti pergi ke halaman front/orders/order_details.blade.php, dan jika tidak, ini berarti pergi ke halaman front/orders/orders.blade.php
 
 
 
-        // iyzipay (iyzico) routes:    // iyzico Payment Gateway integration in/with Laravel
-        // iyzico payment gateway integration in Laravel (this route is accessed from checkout() method in Front/ProductsController.php). Rendering front/iyzipay/iyzipay.blade.php page
-        Route::get('iyzipay', 'IyzipayController@iyzipay');
+		// Rute PayPal:
+		// Integrasi gateway pembayaran PayPal di Laravel (rute ini diakses dari metode checkout() di Front/ProductsController.php). Merender halaman front/paypal/paypal.blade.php
+		Route::get('paypal', 'PaypalController@paypal');
 
-        // Make an iyzipay payment (redirect the user to iyzico payment gateway with the order details)
-        Route::get('iyzipay/pay', 'IyzipayController@pay'); 
-    });
+		// Lakukan pembayaran PayPal
+		Route::post('pay', 'PaypalController@pay')->name('payment'); 
+
+		// Pembayaran PayPal berhasil
+		Route::get('success', 'PaypalController@success');
+
+		// Pembayaran PayPal gagal
+		Route::get('error', 'PaypalController@error');
+
+
+
+		// Rute iyzipay (iyzico): 	// Integrasi Gateway Pembayaran iyzico di/dengan Laravel
+		// Integrasi gateway pembayaran iyzico di Laravel (rute ini diakses dari metode checkout() di Front/ProductsController.php). Merender halaman front/iyzipay/iyzipay.blade.php
+		Route::get('iyzipay', 'IyzipayController@iyzipay');
+
+		// Lakukan pembayaran iyzipay (redirect pengguna ke gateway pembayaran iyzico dengan detail pesanan)
+		Route::get('iyzipay/pay', 'IyzipayController@pay'); 
+	});
+	
+	// Rute Pembayaran Midtrans
+	// Rute untuk menginisiasi pembayaran Midtrans (melalui AJAX dari frontend)
+	// Ditempatkan di luar grup 'auth' jika Anda ingin memungkinkan pembayaran oleh tamu (guest)
+	// Jika hanya untuk pengguna yang masuk, tetap di dalam grup 'auth' yang sudah ada.
+	// Saya akan menempatkannya di sini untuk fleksibilitas.
+	Route::post('/midtrans/initiate-payment', [MidtransController::class, 'initiatePayment']);
+
+	// Rute untuk callback dari Midtrans setelah pembayaran selesai (ini harus diakses publik)
+	// Midtrans akan mengirimkan permintaan POST ke URL ini.
+	Route::post('/midtrans/notification', [MidtransController::class, 'handleNotification']);
+
+	// Rute untuk halaman redirect setelah pembayaran di Midtrans Snap selesai
+	// Midtrans akan mengarahkan pengguna ke URL ini.
+	Route::get('/midtrans/finish', [MidtransController::class, 'finish']);
+	Route::get('/midtrans/error', [MidtransController::class, 'error']);
+	Route::get('/midtrans/pending', [MidtransController::class, 'pending']);
+
 
 });
+
+// Rute Dashboard Laravel Breeze/Auth bawaan
+Route::get('/dashboard', function () {
+	return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+// Rute Profil Laravel Breeze/Auth bawaan
+Route::middleware('auth')->group(function () {
+	Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+	Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update'); // Perbaikan: seharusnya Route::patch
+	Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Ini harus tetap di bagian paling bawah jika ada di file auth.php terpisah
+// require __DIR__.'/auth.php'; // Baris ini sudah ada di awal file. Pastikan tidak dobel.

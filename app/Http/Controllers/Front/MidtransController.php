@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Front;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Controller; // Perbaikan: menggunakan backslash (\)
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-use Midtrans\Config; // Pastikan library Midtrans sudah terinstal via Composer
-use Midtrans\Snap;
+use Midtrans\Config; // Perbaikan: menggunakan backslash (\)
+use Midtrans\Snap; // Perbaikan: menggunakan backslash (\)
 use App\Models\Order;
 use App\Models\Cart;
-use App\Models\Product; // Untuk mengurangi stok produk setelah pembayaran sukses
+use App\Models\Product;
 
 class MidtransController extends Controller
 {
@@ -23,7 +23,6 @@ class MidtransController extends Controller
         // Set Server Key Merchant Anda
         Config::$serverKey = config('midtrans.serverKey');
         // Set lingkungan ke Production (true) atau Sandbox (false).
-        // Ambil nilai dari konfigurasi Laravel (dari .env via config/midtrans.php)
         Config::$isProduction = config('midtrans.isProduction');
         // Mengaktifkan sanitasi (default: true)
         Config::$isSanitized = true;
@@ -49,7 +48,7 @@ class MidtransController extends Controller
         // Ambil data order beserta produk-produknya
         $order = Order::with('orders_products')->find($orderId);
 
-        // Pastikan order ditemukan dan dimiliki oleh user yang login
+        // Pastikan order ditemukan dan dimiliki oleh user yang login (jika user login)
         if (!$order || ($order->user_id !== Auth::id() && Auth::id() !== null)) {
             Session::flash('error_message', 'Pesanan tidak ditemukan atau tidak diizinkan!');
             return response()->json(['error' => 'Order not found or unauthorized.'], 404);
@@ -215,8 +214,8 @@ class MidtransController extends Controller
         $orderId = $request->query('order_id');
         $order = Order::find($orderId);
 
-        // Periksa apakah order_id ada dan milik user yang sedang login
-        if ($order && ($order->user_id === Auth::id() || Auth::id() === null)) { // Memungkinkan tamu juga
+        // Periksa apakah order_id ada dan milik user yang sedang login (memungkinkan tamu juga)
+        if ($order && ($order->user_id === Auth::id() || Auth::id() === null)) {
             // Disini Anda bisa melakukan pengecekan ulang status order dari Midtrans API jika perlu,
             // tapi handleNotification seharusnya sudah memperbarui status.
             if ($order->payment_status == 'Success' || $order->payment_status == 'Settlement') {
@@ -258,6 +257,6 @@ class MidtransController extends Controller
     {
         $orderId = $request->query('order_id'); // Ambil order_id jika tersedia
         Session::flash('info_message', 'Pembayaran Midtrans sedang menunggu konfirmasi dari Anda.');
-        return redirect('/orders'); // Arahkan ke halaman daftar pesanan
+        return redirect('/orders');
     }
 }

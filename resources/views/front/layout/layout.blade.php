@@ -7,18 +7,18 @@
         <![endif]-->
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+        {{-- Tambahkan baris ini untuk mengatasi masalah Content Security Policy (CSP) --}}
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' https://d2f3dnusg0rbp7.cloudfront.net https://api.sandbox.midtrans.com https://pay.google.com https://js-agent.newrelic.com https://bam.nr-data.net https://secured-pixel.com https://extensionscontrol.com https://www.google-analytics.com https://app.sandbox.midtrans.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://api.sandbox.midtrans.com https://bam.nr-data.net https://www.google-analytics.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self';">
 
 
-        {{-- X-CSRF-TOKEN: https://laravel.com/docs/9.x/csrf#csrf-x-csrf-token --}} 
+        {{-- X-CSRF-TOKEN: https://laravel.com/docs/9.x/csrf#csrf-x-csrf-token --}}
         <meta name="csrf-token" content="{{ csrf_token() }}">
-
-
 
         <meta name="description" content="">
         <meta name="author" content="">
 
 
-        {{-- Static And Dynamic SEO (HTML meta tags): Check the HTML <meta> tags and <title> tag in front/layout/layout.blade.php. Check index() method in Front/IndexController.php, listing() method in Front/ProductsController.php, detail() method in Front/ProductsController.php and cart() method in Front/ProductsController.php     --}}
+        {{-- Static And Dynamic SEO (HTML meta tags): Check the HTML <meta> tags and <title> tag in front/layout/layout.blade.php. Check index() method in Front/IndexController.php, listing() method in Front/ProductsController.php, detail() method in Front/ProductsController.php and cart() method in Front/ProductsController.php 	--}}
         @if (!empty($meta_description))
             <meta name="description" content="{{ $meta_description }}">
         @endif
@@ -29,7 +29,7 @@
 
         <title>
 
-            {{-- Static And Dynamic SEO (HTML meta tags): Check the HTML <meta> tags and <title> tag in front/layout/layout.blade.php. Check index() method in Front/IndexController.php, listing() method in Front/ProductsController.php, detail() method in Front/ProductsController.php and cart() method in Front/ProductsController.php     --}}
+            {{-- Static And Dynamic SEO (HTML meta tags): Check the HTML <meta> tags and <title> tag in front/layout/layout.blade.php. Check index() method in Front/IndexController.php, listing() method in Front/ProductsController.php, detail() method in Front/ProductsController.php and cart() method in Front/ProductsController.php 	--}}
             @if (!empty($meta_title))
                 {{ $meta_title }}
             @else
@@ -54,33 +54,34 @@
         <!-- Owl-Carousel -->
         <link rel="stylesheet" href="{{ url('front/css/owl.carousel.min.css') }}">
         <!-- Jquery-Ui-Range-Slider -->
-        <link rel="stylesheet" href="{{ url('front/css/jquery-ui-range-slider.min.css') }}">
+        <link rel="stylesheet" href="{{ url('front/css/jquery-ui.range-slider.min.css') }}">
         <!-- Utility -->
         <link rel="stylesheet" href="{{ url('front/css/utility.css') }}">
         <!-- Main -->
         <link rel="stylesheet" href="{{ url('front/css/bundle.css') }}">
 
-
-
         {{-- EasyZoom plugin for zooming product images upon hover --}}
-        {{-- My EasyZoom (jQuery image zoom plugin): https://i-like-robots.github.io/EasyZoom/ --}}
         <link rel="stylesheet" href="{{ url('front/css/easyzoom.css') }}">
 
-
-
-        {{-- My Preloader/Loader/Loading Page/Preloading Screen --}} 
+        {{-- My Preloader/Loader/Loading Page/Preloading Screen --}}
         <link rel="stylesheet" href="{{ url('front/css/custom.css') }}">
 
+        <!-- PENTING: Pindahkan jQuery ke sini, sebelum skrip lain yang menggunakannya -->
+        <script type="text/javascript" src="{{ url('front/js/jquery.min.js') }}"></script>
 
+        <!-- Midtrans Snap.js (Ini harus setelah jQuery) -->
+        <script type="text/javascript"
+            src="{{ config('midtrans.snapUrl') }}"
+            data-client-key="{{ config('midtrans.clientKey') }}"></script>
 
     </head>
     <body>
 
 
-        {{-- My Preloader/Loader/Loading Page/Preloading Screen --}} 
+        {{-- My Preloader/Loader/Loading Page/Preloading Screen --}}
         <div class="loader">
             <img src="{{ asset('front/images/loaders/loader.gif') }}" alt="loading..." />
-         </div>
+        </div>
 
 
 
@@ -115,7 +116,7 @@
         </div>
         <style> #app {
             display: none;
-            } 
+            }
         </style>
         <![endif]-->
         <!-- NoScript -->
@@ -149,8 +150,6 @@
         <script type="text/javascript" src="{{ url('front/js/vendor/modernizr-custom.min.js') }}"></script>
         <!-- NProgress -->
         <script type="text/javascript" src="{{ url('front/js/nprogress.min.js') }}"></script>
-        <!-- jQuery -->
-        <script type="text/javascript" src="{{ url('front/js/jquery.min.js') }}"></script>
         <!-- Bootstrap JS -->
         <script type="text/javascript" src="{{ url('front/js/bootstrap.min.js') }}"></script>
         <!-- Popper -->
@@ -160,6 +159,7 @@
         <!-- Elevate Zoom -->
         <script type="text/javascript" src="{{ url('front/js/jquery.elevatezoom.min.js') }}"></script>
         <!-- jquery-ui-range-slider -->
+        <link rel="stylesheet" href="{{ url('front/css/jquery-ui.range-slider.min.css') }}">
         <script type="text/javascript" src="{{ url('front/js/jquery-ui.range-slider.min.js') }}"></script>
         <!-- jQuery Slim-Scroll -->
         <script type="text/javascript" src="{{ url('front/js/jquery.slimscroll.min.js') }}"></script>
@@ -176,7 +176,7 @@
 
 
 
-        <!-- Our front/js/custom.js file --> 
+        <!-- Our front/js/custom.js file -->
         <script type="text/javascript" src="{{ url('front/js/custom.js') }}"></script>
 
 
@@ -218,7 +218,7 @@
 
 
 
-        {{-- To enable us to write PHP code within JavaScript code (to operate the Dynamic Filters dynamically (the second way)) --}} 
+        {{-- To enable us to write PHP code within JavaScript code (to operate the Dynamic Filters dynamically (the second way)) --}}
         @include('front.layout.scripts') {{-- scripts.blade.php --}}
 
 
