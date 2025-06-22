@@ -5,191 +5,158 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Mail;
-use App\Mail\OrderShipped;
 use App\Models\Cart;
-use App\Models\Coupon;
 use App\Models\DeliveryAddress;
 use App\Models\Order;
 use App\Models\OrdersProduct;
 use App\Models\Product;
-use App\Models\Sms;
-use App\Models\User;
-
 
 class OrderController extends Controller
 {
     /**
-     * Metode untuk menampilkan halaman daftar pesanan atau detail pesanan.
-     *
-     * @param int|null $id ID pesanan (opsional)
-     * @return \Illuminate\View\View
+     * Display the user's orders list or a specific order's details.
+     * Menampilkan daftar pesanan pengguna atau detail pesanan tertentu.
      */
     public function orders($id = null)
     {
         if (empty($id)) {
-            // Jika ID pesanan tidak ada, tampilkan daftar semua pesanan pengguna
             $orders = Order::with('orders_products')->where('user_id', Auth::user()->id)
                             ->orderBy('id', 'Desc')->get()->toArray();
             return view('front.orders.orders')->with(compact('orders'));
         } else {
-            // Jika ID pesanan ada, tampilkan detail pesanan tertentu
             $orderDetails = Order::with('orders_products')->where('id', $id)->first()->toArray();
-            return view('front.orders.order_details')->with(compact('orderDetails'));
+            if ($orderDetails['user_id'] == Auth::id()) {
+                return view('front.orders.order_details')->with(compact('orderDetails'));
+            } else {
+                return redirect('/orders');
+            }
         }
     }
 
     /**
-     * Metode untuk menempatkan (place) pesanan baru.
-     * Ini adalah inti dari proses checkout.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * Create a new order entry in the database.
+     * Membuat entri pesanan baru di database.
      */
     public function placeOrder(Request $request)
     {
         if ($request->isMethod('post')) {
             $data = $request->all();
 
-            // --- Validasi Data (Contoh, sesuaikan dengan kebutuhan Anda) ---
-            // Asumsi validasi dasar untuk alamat pengiriman sudah dilakukan di frontend atau middleware
-            // Anda bisa menambahkan validasi di sini jika diperlukan, misal:
-            // $request->validate([
-            //     'name' => 'required',
-            //     'address' => 'required',
-            //     'city' => 'required',
-            //     'payment_gateway' => 'required',
-            //     // ... validasi lain
-            // ]);
-
-            // --- Dapatkan ID dan Email Pengguna ---
-            $user_id = 0;
-            $user_email = $data['email'] ?? null; // Pastikan email ada jika guest checkout
-            if (Auth::check()) {
-                $user_id = Auth::user()->id;
-                $user_email = Auth::user()->email;
+            // Basic input validation
+            // Validasi input dasar
+            if (empty($data['address_id']) || empty($data['payment_gateway'])) {
+                return response()->json(['status' => 'error', 'message' => 'Silakan pilih alamat pengiriman dan metode pembayaran.'], 400);
             }
 
-            // --- Dapatkan Item Keranjang ---
-            $getCartItems = Cart::where('session_id', Session::get('session_id'));
-            if (Auth::check()) {
-                $getCartItems = $getCartItems->orWhere('user_id', $user_id);
+            // Get delivery address details from database
+            // Dapatkan detail alamat dari database
+            $deliveryAddress = DeliveryAddress::where('id', $data['address_id'])->first();
+            if (!$deliveryAddress) {
+                return response()->json(['status' => 'error', 'message' => 'Alamat pengiriman tidak valid.'], 400);
             }
-            $getCartItems = json_decode(json_encode($getCartItems->get()), true);
+            
+            $user_id = Auth::user()->id;
+            $user_email = Auth::user()->email;
 
-            if (empty($getCartItems)) {
-                Session::flash('error_message', 'Keranjang Anda kosong!');
-                // Mengembalikan JSON dengan instruksi redirect untuk AJAX
-                return response()->json(['error' => 'Keranjang kosong.', 'redirect' => url('/cart')], 400);
+            // Get cart items
+            // Dapatkan item dari keranjang
+            $getCartItems = Cart::with('product')->where('user_id', $user_id)->get();
+
+            if ($getCartItems->isEmpty()) {
+                return response()->json(['status' => 'error', 'message' => 'Keranjang Anda kosong.'], 400);
             }
 
-            // --- Hitung Total Harga, Kupon, dan Biaya Pengiriman ---
+            // Calculate totals
+            // Hitung total harga, kupon, dan biaya kirim
             $total_price = 0;
             foreach ($getCartItems as $item) {
-                $total_price += ($item['product_price'] * $item['product_qty']);
+                $attrPrice = Product::getDiscountAttributePrice($item->product_id, $item->size);
+                $total_price += ($attrPrice['final_price'] * $item->quantity);
             }
-
-            $coupon_amount = 0;
-            $coupon_code = Session::get('couponCode');
-            if (!empty($coupon_code)) {
-                $coupon_details = Coupon::where('coupon_code', $coupon_code)->first();
-                if ($coupon_details) {
-                    $coupon_amount = $total_price * ($coupon_details->amount / 100);
-                }
-            }
-
-            // Anda perlu mengimplementasikan logika untuk menghitung shipping_charges
-            // Ini biasanya melibatkan pengecekan pincode, berat produk, dll.
-            $shipping_charges = 0; // Placeholder, sesuaikan dengan logika Anda
-
+            $coupon_amount = Session::get('couponAmount') ?? 0;
+            $shipping_charges = 0; // Implement shipping logic here if needed
             $grand_total = $total_price - $coupon_amount + $shipping_charges;
 
-            // --- Simpan Detail Pesanan ke Tabel 'orders' ---
-            $order = new Order;
-            $order->user_id = $user_id;
-            $order->name = $data['name'];
-            $order->address = $data['address'];
-            $order->city = $data['city'];
-            $order->state = $data['state'];
-            $order->country = $data['country'];
-            $order->pincode = $data['pincode'];
-            $order->mobile = $data['mobile'];
-            $order->email = $user_email;
-            $order->shipping_charges = $shipping_charges;
-            $order->coupon_code = $coupon_code ?? '';
-            $order->coupon_amount = $coupon_amount;
-            $order->order_status = 'New'; // Status awal saat order dibuat
-            $order->payment_method = $data['payment_gateway'];
-            $order->payment_gateway = $data['payment_gateway'];
-            $order->grand_total = $grand_total;
-            $order->save();
+            // Use a database transaction to ensure data integrity
+            // Gunakan transaksi database untuk memastikan integritas data
+            DB::beginTransaction();
 
-            // --- Simpan Produk Pesanan ke Tabel 'orders_products' ---
-            foreach ($getCartItems as $item) {
-                $orderProduct = new OrdersProduct;
-                $orderProduct->order_id = $order->id;
-                $orderProduct->user_id = $user_id;
-                $orderProduct->product_id = $item['product_id'];
-                $orderProduct->product_code = $item['product_code'];
-                $orderProduct->product_name = $item['product_name'];
-                $orderProduct->product_size = $item['product_size'];
-                $orderProduct->product_color = $item['product_color'];
-                $orderProduct->product_price = $item['product_price'];
-                $orderProduct->product_qty = $item['product_qty'];
-                $orderProduct->vendor_id = $item['vendor_id'];
-                $orderProduct->save();
-
-                // Stok produk akan dikurangi setelah pembayaran sukses di MidtransController,
-                // tapi jika Anda juga ingin mengurangi di sini (untuk metode non-Midtrans),
-                // pastikan logika tidak duplikat. Untuk Midtrans, stok dikurangi saat
-                // notifikasi 'Success' diterima.
-            }
-
-            // --- Logika Spesifik Berdasarkan Metode Pembayaran ---
-            if ($data['payment_gateway'] == 'COD') {
+            try {
+                // Save order details
+                // Simpan detail pesanan
+                $order = new Order;
+                $order->user_id = $user_id;
+                $order->name = $deliveryAddress->name;
+                $order->address = $deliveryAddress->address;
+                $order->city = $deliveryAddress->city;
+                $order->state = $deliveryAddress->state;
+                $order->country = $deliveryAddress->country;
+                $order->pincode = $deliveryAddress->pincode;
+                $order->mobile = $deliveryAddress->mobile;
+                $order->email = $user_email;
+                $order->shipping_charges = $shipping_charges;
+                $order->coupon_code = Session::get('couponCode') ?? '';
+                $order->coupon_amount = $coupon_amount;
+                $order->order_status = 'New';
+                $order->payment_method = $data['payment_gateway'];
+                $order->payment_gateway = $data['payment_gateway'];
+                $order->grand_total = $grand_total;
                 $order->payment_status = 'Pending';
                 $order->save();
-                // Hapus item dari keranjang setelah pesanan COD berhasil
-                if (Auth::check()) {
-                    Cart::where('user_id', $user_id)->delete();
-                } else {
-                    Cart::where('session_id', Session::get('session_id'))->delete();
+                
+                $order_id = $order->id;
+
+                // Save ordered products
+                // Simpan produk pesanan
+                foreach ($getCartItems as $item) {
+                    $productDetails = $item->product;
+                    $attrPrice = Product::getDiscountAttributePrice($item->product_id, $item->size);
+                    
+                    $orderProduct = new OrdersProduct;
+                    $orderProduct->order_id = $order_id;
+                    $orderProduct->user_id = $user_id;
+                    $orderProduct->vendor_id = $productDetails->vendor_id;
+                    $orderProduct->admin_id = 0; // Or get the relevant admin ID if needed
+                    $orderProduct->product_id = $item->product_id;
+                    $orderProduct->product_code = $productDetails->product_code;
+                    $orderProduct->product_name = $productDetails->product_name;
+                    $orderProduct->product_color = $productDetails->product_color ?? '';
+                    $orderProduct->product_size = $item->size;
+                    $orderProduct->product_price = $attrPrice['final_price'];
+                    $orderProduct->product_qty = $item->quantity;
+                    $orderProduct->item_status = 'Pending';
+                    $orderProduct->save();
                 }
-                Session::forget('couponCode');
-                Session::forget('couponAmount');
+                
+                Session::put('order_id', $order_id);
 
-                Session::flash('success_message', 'Pesanan Anda telah berhasil ditempatkan dengan COD. Pembayaran akan dilakukan saat pengiriman.');
-                // Mengembalikan JSON dengan instruksi redirect untuk AJAX
-                return response()->json(['status' => 'redirect', 'redirect' => url('/orders')]);
+                DB::commit(); // Commit the transaction
 
-            } else if ($data['payment_gateway'] == 'paypal') {
-                $order->payment_status = 'Pending';
-                $order->save();
-                // Redirect ke halaman PayPal
-                return response()->json(['status' => 'redirect', 'redirect' => url('/paypal?order_id=' . $order->id)]);
+                // Return response based on payment gateway
+                // Kembalikan respons berdasarkan metode pembayaran
+                if ($data['payment_gateway'] == 'COD') {
+                    Cart::where('user_id', $user_id)->delete();
+                    Session::forget(['couponCode', 'couponAmount']);
+                    Session::flash('success_message', 'Pesanan Anda dengan COD telah berhasil dibuat.');
+                    return response()->json(['status' => 'success', 'redirect' => url('/thanks')]);
+                } else if ($data['payment_gateway'] == 'midtrans') {
+                    // For Midtrans, just return the order_id for the frontend to process
+                    // Untuk Midtrans, kembalikan ID Pesanan agar frontend bisa melanjutkan
+                    return response()->json(['status' => 'midtrans_initiated', 'order_id' => $order_id]);
+                } else {
+                    // For other gateways like PayPal
+                    return response()->json(['status' => 'success', 'redirect' => url('/' . $data['payment_gateway'])]);
+                }
 
-            } else if ($data['payment_gateway'] == 'midtrans') {
-                // Untuk Midtrans, status awal adalah 'Pending'.
-                // Status akan diupdate oleh webhook dari Midtrans.
-                $order->payment_status = 'Pending';
-                $order->save();
-
-                // Karena ini adalah AJAX call dari frontend, kita kembalikan order_id
-                // agar JavaScript dapat memicu Midtrans Snap.
-                // Keranjang akan dihapus di MidtransController::handleNotification()
-                // setelah pembayaran berhasil dikonfirmasi oleh Midtrans.
-                return response()->json(['order_id' => $order->id, 'status' => 'midtrans_initiated']);
-            } else {
-                // Metode pembayaran tidak valid
-                Session::flash('error_message', 'Metode pembayaran tidak valid.');
-                // Mengembalikan JSON dengan instruksi redirect untuk AJAX
-                return response()->json(['error' => 'Metode pembayaran tidak valid.', 'redirect' => url('/cart')], 400);
+            } catch (\Exception $e) {
+                DB::rollBack(); // Rollback the transaction on error
+                Log::error('Gagal membuat pesanan: ' . $e->getMessage());
+                return response()->json(['status' => 'error', 'message' => 'Gagal membuat pesanan. Silakan coba lagi.'], 500);
             }
         }
-
-        // Jika request bukan POST, kembalikan ke halaman checkout (misal: jika diakses langsung)
-        // Mengembalikan JSON dengan instruksi redirect untuk AJAX
-        return response()->json(['error' => 'Metode request tidak valid.', 'redirect' => url('/checkout')], 405);
+        return response()->json(['status' => 'error', 'message' => 'Request tidak valid.'], 405);
     }
 }

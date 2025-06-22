@@ -71,8 +71,8 @@
 
         <!-- Midtrans Snap.js (Ini harus setelah jQuery) -->
         <script type="text/javascript"
-            src="{{ config('midtrans.snapUrl') }}"
-            data-client-key="{{ config('midtrans.clientKey') }}"></script>
+            src="{{ config('midtrans.snap_url') }}"
+            data-client-key="{{ config('midtrans.client_key') }}"></script>
 
     </head>
     <body>
