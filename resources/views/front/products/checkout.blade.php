@@ -28,7 +28,7 @@
     <div class="page-checkout u-s-p-t-80">
         <div class="container">
 
-            {{-- Showing the following HTML Form Validation Errors: (check checkout() method in Front/ProductsController.php) --}}
+            {{-- Menampilkan Notifikasi dari Controller --}}
             @if (Session::has('error_message'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     <strong>Error:</strong> {{ Session::get('error_message') }}
@@ -45,6 +45,15 @@
                     </button>
                 </div>
             @endif
+            @if (Session::has('info_message'))
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Info:</strong> {{ Session::get('info_message') }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            @endif
+
 
             <div class="row">
                 <div class="col-lg-12 col-md-12">
@@ -274,18 +283,18 @@
                                         snap.pay(snapResponse.snap_token, {
                                             onSuccess: function(result) {
                                                 console.log('Midtrans Snap Success:', result); // DEBUG
-                                                alert("Pembayaran berhasil!");
-                                                window.location.href = "/midtrans/finish?order_id=" + snapResponse.order_id;
+                                                // Redirect ke halaman finish menggunakan URL absolut dari Laravel
+                                                window.location.href = "{{ url('/midtrans/finish') }}";
                                             },
                                             onPending: function(result) {
                                                 console.log('Midtrans Snap Pending:', result); // DEBUG
-                                                alert("Pembayaran sedang menunggu konfirmasi!");
-                                                window.location.href = "/midtrans/pending?order_id=" + snapResponse.order_id;
+                                                // Redirect ke halaman pending menggunakan URL absolut dari Laravel
+                                                window.location.href = "{{ url('/midtrans/pending') }}";
                                             },
                                             onError: function(result) {
                                                 console.log('Midtrans Snap Error:', result); // DEBUG
-                                                alert("Pembayaran gagal!");
-                                                window.location.href = "/midtrans/error?order_id=" + snapResponse.order_id;
+                                                // Redirect ke halaman error menggunakan URL absolut dari Laravel
+                                                window.location.href = "{{ url('/midtrans/error') }}";
                                             },
                                             onClose: function() {
                                                 console.log('Midtrans Snap Closed by user.'); // DEBUG
@@ -341,9 +350,9 @@
         // (ini mungkin sudah ada di front/js/custom.js Anda)
         $('input[name="address_id"]').on('change', function() {
             var selectedAddress = $(this);
-            var shippingCharges = parseFloat(selectedAddress.attr('shipping_charges'));
-            var totalPrice = parseFloat(selectedAddress.attr('total_price'));
-            var couponAmount = parseFloat(selectedAddress.attr('coupon_amount'));
+            var shippingCharges = parseFloat(selectedAddress.attr('shipping_charges')) || 0;
+            var totalPrice = parseFloat(selectedAddress.attr('total_price')) || 0;
+            var couponAmount = parseFloat(selectedAddress.attr('coupon_amount')) || 0;
 
             // Update display of shipping charges
             $('.shipping_charges').text('Rp' + shippingCharges.toLocaleString('id-ID'));
@@ -358,8 +367,8 @@
             $('input[name="address_id"]:checked').trigger('change');
         } else {
             // Jika tidak ada alamat yang dipilih secara default, pastikan grand total awal diperbarui
-            var initialTotalPrice = {{ Session::get('total_price') ?? 0 }};
-            var initialCouponAmount = {{ Session::get('couponAmount') ?? 0 }};
+            var initialTotalPrice = {{ $total_price ?? 0 }};
+            var initialCouponAmount = {{ \Illuminate\Support\Facades\Session::get('couponAmount') ?? 0 }};
             var initialGrandTotal = initialTotalPrice - initialCouponAmount;
             $('.grand_total').text('Rp' + initialGrandTotal.toLocaleString('id-ID'));
         }

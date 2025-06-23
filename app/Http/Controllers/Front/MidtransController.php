@@ -34,7 +34,7 @@ class MidtransController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function initiatePayment(Request $request) // <-- NAMA METHOD TELAH DIPERBAIKI
+    public function initiatePayment(Request $request)
     {
         // Validasi order_id dari request AJAX
         $request->validate(['order_id' => 'required|exists:orders,id']);
@@ -87,6 +87,12 @@ class MidtransController extends Controller
                 'phone' => $order->mobile,
             ],
             'item_details' => $item_details,
+            // **[PERBAIKAN] Menambahkan URL Callback dari Sisi Server**
+            'callbacks' => [
+                'finish' => url('/midtrans/finish'),
+                'error' => url('/midtrans/error'),
+                'pending' => url('/midtrans/pending'),
+            ]
         ];
 
         try {
@@ -140,19 +146,30 @@ class MidtransController extends Controller
         return response('OK', 200);
     }
     
-    // Anda bisa menambahkan method untuk halaman finish, error, pending di sini jika perlu
+    /**
+     * Menangani redirect setelah pembayaran selesai (finish).
+     * Akan mengarahkan ke halaman checkout dengan notifikasi sukses.
+     */
     public function finish(Request $request) {
-        Session::flash('success_message', 'Terima kasih. Pesanan Anda akan segera kami proses.');
-        return redirect('/orders');
+        Session::flash('success_message', 'Pembayaran berhasil! Terima kasih, pesanan Anda akan segera kami proses.');
+        return redirect('/checkout');
     }
 
+    /**
+     * Menangani redirect jika pembayaran gagal (error).
+     * Akan mengarahkan ke halaman checkout dengan notifikasi error.
+     */
     public function error(Request $request) {
-        Session::flash('error_message', 'Pembayaran gagal. Silakan coba lagi.');
-        return redirect('/cart');
+        Session::flash('error_message', 'Pembayaran gagal atau dibatalkan. Silakan coba lagi.');
+        return redirect('/checkout');
     }
     
+    /**
+     * Menangani redirect jika pembayaran tertunda (pending).
+     * Akan mengarahkan ke halaman checkout dengan notifikasi informasi.
+     */
     public function pending(Request $request) {
-        Session::flash('info_message', 'Pembayaran Anda sedang menunggu. Silakan selesaikan pembayaran.');
-        return redirect('/orders');
+        Session::flash('info_message', 'Pembayaran Anda sedang menunggu penyelesaian. Kami akan mengupdate status setelah pembayaran dikonfirmasi.');
+        return redirect('/checkout');
     }
 }
